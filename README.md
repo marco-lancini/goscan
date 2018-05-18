@@ -1,19 +1,19 @@
 # GoScan
 
 
-**GoScan** is a project I developed in order to learn @golang. It is an interactive network scanner client, featuring auto-complete, which provides abstraction and automation over nmap.
+**GoScan** is a project I developed in order to learn [@golang](https://twitter.com/golang). It is an interactive network scanner client, featuring auto-complete, which provides abstraction and automation over nmap.
 
 It can be used to perform host discovery, port scanning, and service enumeration in situations where being stealthy is not a priority, and time is limited (think at CTFs, OSCP, exams, etc.).
 
+<a href="https://asciinema.org/a/4ebtOAiDKmM1X89yCIpFQjqSQ" target="_blank"><img src="https://asciinema.org/a/4ebtOAiDKmM1X89yCIpFQjqSQ.png"/></a>
 
-[![asciicast](https://asciinema.org/a/4ebtOAiDKmM1X89yCIpFQjqSQ.png)](https://asciinema.org/a/4ebtOAiDKmM1X89yCIpFQjqSQ)
 
 
 # Installation
 
 #### Binary installation (Recommended)
 
-Binaries are available from the [Release] page(https://github.com/marco-lancini/goscan/releases).
+Binaries are available from the [Release](https://github.com/marco-lancini/goscan/releases) page.
 
 ```bash
 # macOS (darwin)
