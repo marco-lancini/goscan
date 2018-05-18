@@ -21,7 +21,7 @@ wget https://github.com/marco-lancini/goscan/releases/download/v1.0/goscan_1.0_d
 unzip goscan_1.0_darwin_amd64.zip
 
 # Linux
-wget https://github.com/marco-lancini/goscan/releases/download/v1.0/goscan_1.0_limux_amd64.zip
+wget https://github.com/marco-lancini/goscan/releases/download/v1.0/goscan_1.0_linux_amd64.zip
 unzip goscan_1.0_linux_amd64.zip
 
 # After that, place the executable in your PATH
