@@ -1,0 +1,22 @@
+### Go template
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+Gopkg.*
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+pkg/
+
+# glide
+vendor/
+
+# Folders
+.DS_Store
+_data/
+goscan/goscan
