@@ -1,0 +1,9 @@
+version: '2'
+services:
+    app:
+        container_name: app
+        build: .
+        restart: always
+        volumes:
+            - ./goscan/:/go/src/goscan/
+        command: /bin/bash
