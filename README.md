@@ -5,7 +5,7 @@
 
 It can be used to perform host discovery, port scanning, and service enumeration in situations where being stealthy is not a priority, and time is limited (think at CTFs, OSCP, exams, etc.).
 
-<a href="https://asciinema.org/a/4ebtOAiDKmM1X89yCIpFQjqSQ" target="_blank"><img src="https://asciinema.org/a/4ebtOAiDKmM1X89yCIpFQjqSQ.png"/></a>
+[![asciicast](https://asciinema.org/a/4ebtOAiDKmM1X89yCIpFQjqSQ.png)](https://asciinema.org/a/4ebtOAiDKmM1X89yCIpFQjqSQ)
 
 
 
