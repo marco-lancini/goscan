@@ -63,6 +63,10 @@ func cmdHelp() {
 }
 
 func cmdShow(args []string) {
+	if len(args) != 1 {
+		utils.Config.Log.LogError("Invalid command provided")
+		return
+	}
 	what, _ := utils.ParseNextArg(args)
 	switch what {
 	case "hosts":
