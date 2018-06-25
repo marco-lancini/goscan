@@ -1,8 +1,8 @@
 package scan
 
 import (
-	"goscan/core/model"
-	"goscan/core/utils"
+	"github.com/marco-lancini/goscan/core/model"
+	"github.com/marco-lancini/goscan/core/utils"
 )
 
 // ---------------------------------------------------------------------------------------
@@ -10,19 +10,24 @@ import (
 // ---------------------------------------------------------------------------------------
 var EnumList = []*EnumScan{}
 
+
 // ---------------------------------------------------------------------------------------
 // SCAN LAUNCHER
 // ---------------------------------------------------------------------------------------
 func ScanEnumerate(target string, polite string, kind string) {
-	for i := 0; i < len(utils.Config.Hosts); i++ {
+	utils.Config.Log.LogInfo("Starting service enumeration")
+	hosts := model.GetAllHosts(utils.Config.DB)
+	for _, h := range hosts {
 		// Scan only if:
 		//   - target is ALL
 		//   - or if host is the selected one
-		if target == "ALL" || target == utils.Config.Hosts[i].Address {
-			go workerEnum(&utils.Config.Hosts[i], kind, polite)
+		if target == "ALL" || target == h.Address {
+			temp := h
+			go workerEnum(&temp, kind, polite)
 		}
 	}
 }
+
 
 // ---------------------------------------------------------------------------------------
 // WORKER

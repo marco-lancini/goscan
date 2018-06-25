@@ -2,8 +2,8 @@ package scan
 
 import (
 	"fmt"
-	"goscan/core/model"
-	"goscan/core/utils"
+	"github.com/marco-lancini/goscan/core/model"
+	"github.com/marco-lancini/goscan/core/utils"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -26,8 +26,6 @@ func ScanSweep(target string, kind string) {
 		utils.Config.Log.LogError("Invalid type of scan")
 		return
 	}
-	// Print hosts on screen
-	utils.ShowHosts()
 }
 
 // ---------------------------------------------------------------------------------------
@@ -36,7 +34,7 @@ func ScanSweep(target string, kind string) {
 func pingSweep(target string) {
 	// Create a new Scan and run it
 	utils.Config.Log.LogInfo("Starting ping sweep...")
-	name, folder, file, nmapArgs := "pingsweep", "sweep", "ping", "-n -sn"
+	name, folder, file, nmapArgs := "pingsweep", "sweep", "ping", utils.Const_NMAP_SWEEP
 	s := NewScan(name, target, folder, file, nmapArgs)
 	s.RunNmap()
 
@@ -48,11 +46,7 @@ func pingSweep(target string) {
 		status := host.Status.State
 		if status == "up" {
 			addr := host.Addresses[0].Addr
-			temp := model.Host{
-				Address: addr,
-				Status:  status,
-			}
-			AddHost(temp)
+			model.AddHost(utils.Config.DB, addr, "up")
 		}
 	}
 	utils.Config.Log.LogInfo("Ping sweep completed!")
@@ -62,7 +56,7 @@ func arpScan(target string) {
 	// Directly run netdiscover
 	utils.Config.Log.LogInfo("Starting ARP scan...")
 	outfile := filepath.Join(utils.Config.Outfolder, utils.CleanPath(target), "sweep/netdiscover")
-	cmd := fmt.Sprintf("sudo netdiscover -r %s -P > %s && cat %s | grep -E '[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}' | cut -d ' ' -f 2 | sort -u > %s", target, outfile, outfile, outfile)
+	cmd := fmt.Sprintf("netdiscover -r %s -P > %s && cat %s | grep -E '[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}' | cut -d ' ' -f 2 | sort -u > %s", target, outfile, outfile, outfile)
 
 	// Execute the command
 	utils.Config.Log.LogDebug(fmt.Sprintf("Netdiscover command: %s", cmd))
@@ -75,26 +69,8 @@ func arpScan(target string) {
 	// Identify live hosts
 	for _, line := range strings.Split(strings.TrimSuffix(string(out[:]), "\n"), "\n") {
 		if line != "" {
-			temp := model.Host{
-				Address: line,
-				Status:  "up",
-			}
-			AddHost(temp)
+			model.AddHost(utils.Config.DB, line, "up")
 		}
 	}
-
 	utils.Config.Log.LogInfo("ARP scan completed!")
-}
-
-// Add port to the list only if it's new
-func AddHost(newHost model.Host) {
-	existing := false
-	for _, h := range utils.Config.Hosts {
-		if h.Address == newHost.Address {
-			existing = true
-		}
-	}
-	if existing == false {
-		utils.Config.Hosts = append(utils.Config.Hosts, newHost)
-	}
 }

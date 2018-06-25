@@ -1,8 +1,9 @@
 package scan
 
 import (
-	"goscan/core/model"
-	"goscan/core/utils"
+	"fmt"
+	"github.com/marco-lancini/goscan/core/model"
+	"github.com/marco-lancini/goscan/core/utils"
 	"sync"
 	"time"
 )
@@ -48,12 +49,14 @@ func ScanPort(target string, kind string) {
 // SCAN LAUNCHER
 // ---------------------------------------------------------------------------------------
 func execScan(name, target, folder, file, nmapArgs string) {
-	for i := 0; i < len(utils.Config.Hosts); i++ {
+	hosts := model.GetAllHosts(utils.Config.DB)
+	for _, h := range hosts {
 		// Scan only if:
 		//   - target is ALL
 		//   - or if host is the selected one
-		if target == "ALL" || target == utils.Config.Hosts[i].Address {
-			go worker(name, &utils.Config.Hosts[i], folder, file, nmapArgs)
+		if target == "ALL" || target == h.Address {
+			temp := h
+			go worker(name, &temp, folder, file, nmapArgs)
 		}
 	}
 }
@@ -72,38 +75,66 @@ func worker(name string, h *model.Host, folder string, file string, nmapArgs str
 	// Parse nmap's output
 	res := s.ParseOutput()
 
+	// Get previously identified ports
+	oldPorts := h.GetMostRecentPorts(utils.Config.DB)
+
 	// Extract ports and services
+	newPorts := []model.Port{}
 	for _, record := range res.Hosts {
+		// -------------------------------------------------------------------------------
 		// Extract OS
+		// -------------------------------------------------------------------------------
 		if len(record.Os.OsMatches) != 0 && record.Os.OsMatches[0].Name != "" {
 			mutex.Lock()
-			h.OS = record.Os.OsMatches[0].Name
+			osname := record.Os.OsMatches[0].Name
+			h.OS = osname
+			utils.Config.DB.Save(&h)
 			mutex.Unlock()
 		}
-		// Patse ports
+
+		// -------------------------------------------------------------------------------
+		// Parse ports
+		// -------------------------------------------------------------------------------
 		for _, port := range record.Ports {
-			var tService model.Service
-			var tPort model.Port
-			// Extract service
+			// Create new port, will add to db if new
+			np, duplicate := model.AddPort(utils.Config.DB, port.PortId, port.Protocol, port.State.State, h)
+			// Check if new or duplicate
+			if duplicate == true {
+				// Old port, update "UpdatedAt" field
+				mutex.Lock()
+				originalPort := np.FindOriginalPort(utils.Config.DB)
+				originalPort.UpdatedAt = time.Now()
+				utils.Config.DB.Save(originalPort)
+				mutex.Unlock()
+				// Remove port from oldPorts
+				oldPorts = removePort(oldPorts, originalPort)
+			} else {
+				newPorts = append(newPorts, *np)
+			}
+
+			// Add Service
 			if port.Service.Name != "" {
-				tService = model.Service{
-					Name:    port.Service.Name,
-					Version: port.Service.Version,
-					Product: port.Service.Product,
-					OsType:  port.Service.OsType,
-				}
+				model.AddService(utils.Config.DB, port.Service.Name, port.Service.Version, port.Service.Product, port.Service.OsType, np)
 			}
-			// Extract port
-			tPort = model.Port{
-				Number:   port.PortId,
-				Protocol: port.Protocol,
-				Status:   port.State.State,
-				Service:  tService,
-			}
-			// If new port, add it to host
-			mutex.Lock()
-			h.AddPort(tPort)
-			mutex.Unlock()
 		}
 	}
+	// -----------------------------------------------------------------------------------
+	// Compare ports
+	// -----------------------------------------------------------------------------------
+	for _, p := range newPorts {
+		utils.Config.Log.LogNotify(fmt.Sprintf("New port found: %s", p.String()))
+	}
+	for _, p := range oldPorts {
+		utils.Config.Log.LogError(fmt.Sprintf("Port now closed: %s", p.String()))
+	}
+}
+
+func removePort(ports []model.Port, toDelete *model.Port) []model.Port {
+	filteredPorts := []model.Port{}
+	for _, p := range ports {
+		if toDelete.Equal(p) == false {
+			filteredPorts = append(filteredPorts, p)
+		}
+	}
+	return filteredPorts
 }

@@ -2,8 +2,8 @@ package scan
 
 import (
 	"fmt"
-	"goscan/core/model"
-	"goscan/core/utils"
+	"github.com/marco-lancini/goscan/core/model"
+	"github.com/marco-lancini/goscan/core/utils"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -98,20 +98,20 @@ func (s *EnumScan) Run() {
 // SCANNERS
 // ---------------------------------------------------------------------------------------
 func (s *EnumScan) EnumDNS() {
-	for i := 0; i < len(s.Target.Ports); i++ {
+	for _, port := range s.Target.GetPorts(utils.Config.DB) {
 		// Enumerate only if port is open
-		if s.Target.Ports[i].Status == "open" {
+		if port.Status == "open" {
 			// Dispatch the correct scanner
-			service := s.Target.Ports[i].Service.Name
-			if strings.Contains(strings.ToLower(service), "dns") {
+			service := port.GetService(utils.Config.DB)
+			if strings.Contains(strings.ToLower(service.Name), "dns") {
 				// Start Enumerating
-				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, s.Target.Ports[i].Number, service))
+				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, service.Name))
 
 				// -----------------------------------------------------------------------
 				// NMAP
 				// -----------------------------------------------------------------------
 				name := "dns_nmap"
-				nmapArgs := fmt.Sprintf("-sV -Pn -sU -p53,%d", s.Target.Ports[i].Number)
+				nmapArgs := fmt.Sprintf("-sV -Pn -sU -p53,%d", port.Number)
 				nmap := NewScan(name, s.Target.Address, "FTP", name, nmapArgs)
 				nmap.RunNmap()
 
@@ -122,19 +122,19 @@ func (s *EnumScan) EnumDNS() {
 }
 
 func (s *EnumScan) EnumFINGER() {
-	for i := 0; i < len(s.Target.Ports); i++ {
+	for _, port := range s.Target.GetPorts(utils.Config.DB) {
 		// Enumerate only if port is open
-		if s.Target.Ports[i].Status == "open" {
+		if port.Status == "open" {
 			// Dispatch the correct scanner
-			if s.Target.Ports[i].Number == 79 {
+			if port.Number == 79 {
 				// Start Enumerating
-				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, s.Target.Ports[i].Number, "finger"))
+				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, "finger"))
 
 				// -----------------------------------------------------------------------
 				// NMAP
 				// -----------------------------------------------------------------------
-				name := fmt.Sprintf("finger_nmap_%d", s.Target.Ports[i].Number)
-				nmapArgs := fmt.Sprintf("-sV -Pn --script=finger -p%d", s.Target.Ports[i].Number)
+				name := fmt.Sprintf("finger_nmap_%d", port.Number)
+				nmapArgs := fmt.Sprintf("-sV -Pn --script=finger -p%d", port.Number)
 				nmap := NewScan(name, s.Target.Address, "FINGER", name, nmapArgs)
 				nmap.RunNmap()
 
@@ -150,20 +150,20 @@ func (s *EnumScan) EnumFINGER() {
 }
 
 func (s *EnumScan) EnumFTP() {
-	for i := 0; i < len(s.Target.Ports); i++ {
+	for _, port := range s.Target.GetPorts(utils.Config.DB) {
 		// Enumerate only if port is open
-		if s.Target.Ports[i].Status == "open" {
+		if port.Status == "open" {
 			// Dispatch the correct scanner
-			service := s.Target.Ports[i].Service.Name
-			if strings.Contains(strings.ToLower(service), "ftp") {
+			service := port.GetService(utils.Config.DB)
+			if strings.Contains(strings.ToLower(service.Name), "ftp") {
 				// Start Enumerating
-				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, s.Target.Ports[i].Number, service))
+				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, service.Name))
 
 				// -----------------------------------------------------------------------
 				// NMAP
 				// -----------------------------------------------------------------------
-				name := fmt.Sprintf("ftp_nmap_%d", s.Target.Ports[i].Number)
-				nmapArgs := fmt.Sprintf("-sV -Pn --script=ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221 -p%d", s.Target.Ports[i].Number)
+				name := fmt.Sprintf("ftp_nmap_%d", port.Number)
+				nmapArgs := fmt.Sprintf("-sV -Pn --script=ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221 -p%d", port.Number)
 				nmap := NewScan(name, s.Target.Address, "FTP", name, nmapArgs)
 				nmap.RunNmap()
 
@@ -184,7 +184,7 @@ func (s *EnumScan) EnumFTP() {
 					cmd := fmt.Sprintf("hydra -L %s -P %s -f -o %s -u %s -s %d ftp",
 						utils.WORDLIST_HYDRA_FTP_USER, utils.WORDLIST_HYDRA_FTP_PWD,
 						output,
-						s.Target.Address, s.Target.Ports[i].Number,
+						s.Target.Address, port.Number,
 					)
 					// Run command
 					s.runCmd(cmd)
@@ -195,20 +195,22 @@ func (s *EnumScan) EnumFTP() {
 }
 
 func (s *EnumScan) EnumHTTP() {
-	for i := 0; i < len(s.Target.Ports); i++ {
+	for _, port := range s.Target.GetPorts(utils.Config.DB) {
 		// Enumerate only if port is open
-		if s.Target.Ports[i].Status == "open" {
+		if port.Status == "open" {
 			// Dispatch the correct scanner
-			service := s.Target.Ports[i].Service.Name
-			if strings.Contains(strings.ToLower(service), "http") || strings.Contains(strings.ToLower(service), "https") || strings.Contains(strings.ToLower(service), "ssl/http") {
+			service := port.GetService(utils.Config.DB)
+			if strings.Contains(strings.ToLower(service.Name), "http") ||
+				strings.Contains(strings.ToLower(service.Name), "https") ||
+				strings.Contains(strings.ToLower(service.Name), "ssl/http") {
 				// Start Enumerating
-				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, s.Target.Ports[i].Number, service))
+				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, service.Name))
 
 				// -----------------------------------------------------------------------
 				// NMAP
 				// -----------------------------------------------------------------------
-				name := fmt.Sprintf("http_nmap_%d", s.Target.Ports[i].Number)
-				nmapArgs := fmt.Sprintf("-sV -Pn --script=http-vhosts,http-userdir-enum,http-apache-negotiation,http-backup-finder,http-config-backup,http-default-accounts,http-methods,http-method-tamper,http-passwd,http-sitemap-generator,http-auth-finder,http-auth,http-fileupload-exploiter,http-put,http-sql-injection,http-stored-xss,http-xssed,http-php-version,http-unsafe-output-escaping,http-phpmyadmin-dir-traversal,http-ntlm-info,http-phpself-xss,http-open-redirect,http-iis-webdav-vuln,http-form-fuzzer,http-vuln-cve2009-3960,http-vuln-cve2010-0738,http-vuln-cve2010-2861,http-vuln-cve2011-3368,http-vuln-cve2012-1823,http-vuln-cve2013-0156,http-robots.txt,http-wordpress-brute,http-wordpress-enum --script-args http-put.url='/uploads/rootme.php',http-put.file='/root/www/php-reverse.php',basepath='/' -p%d", s.Target.Ports[i].Number)
+				name := fmt.Sprintf("http_nmap_%d", port.Number)
+				nmapArgs := fmt.Sprintf("-sV -Pn --script=http-vhosts,http-userdir-enum,http-apache-negotiation,http-backup-finder,http-config-backup,http-default-accounts,http-methods,http-method-tamper,http-passwd,http-sitemap-generator,http-auth-finder,http-auth,http-fileupload-exploiter,http-put,http-sql-injection,http-stored-xss,http-xssed,http-php-version,http-unsafe-output-escaping,http-phpmyadmin-dir-traversal,http-ntlm-info,http-phpself-xss,http-open-redirect,http-iis-webdav-vuln,http-form-fuzzer,http-vuln-cve2009-3960,http-vuln-cve2010-0738,http-vuln-cve2010-2861,http-vuln-cve2011-3368,http-vuln-cve2012-1823,http-vuln-cve2013-0156,http-robots.txt,http-wordpress-brute,http-wordpress-enum --script-args http-put.url='/uploads/rootme.php',http-put.file='/root/www/php-reverse.php',basepath='/' -p%d", port.Number)
 				nmap := NewScan(name, s.Target.Address, "HTTP", name, nmapArgs)
 				nmap.RunNmap()
 
@@ -216,8 +218,8 @@ func (s *EnumScan) EnumHTTP() {
 				// NIKTO
 				// -----------------------------------------------------------------------
 				// Build command
-				output := s.makeOutputPath("HTTP", fmt.Sprintf("http_nikto_%d", s.Target.Ports[i].Number))
-				cmd := fmt.Sprintf("nikto -host %s -p %d > %s", s.Target.Address, s.Target.Ports[i].Number, output)
+				output := s.makeOutputPath("HTTP", fmt.Sprintf("http_nikto_%d", port.Number))
+				cmd := fmt.Sprintf("nikto -host %s -p %d > %s", s.Target.Address, port.Number, output)
 				// Run command
 				s.runCmd(cmd)
 
@@ -225,12 +227,12 @@ func (s *EnumScan) EnumHTTP() {
 				// DIRB
 				// -----------------------------------------------------------------------
 				// Build command
-				output = s.makeOutputPath("HTTP", fmt.Sprintf("http_dirb_%d", s.Target.Ports[i].Number))
+				output = s.makeOutputPath("HTTP", fmt.Sprintf("http_dirb_%d", port.Number))
 				protocol := "https"
-				if strings.Contains(strings.ToLower(service), "http") {
+				if strings.Contains(strings.ToLower(service.Name), "http") {
 					protocol = "http"
 				}
-				cmd = fmt.Sprintf("dirb %s://%s:%d -o %s -S -r", protocol, s.Target.Address, s.Target.Ports[i].Number, output)
+				cmd = fmt.Sprintf("dirb %s://%s:%d -o %s -S -r", protocol, s.Target.Address, port.Number, output)
 				// Run command
 				s.runCmd(cmd)
 
@@ -240,12 +242,12 @@ func (s *EnumScan) EnumHTTP() {
 					// SQLMAP
 					// -------------------------------------------------------------------
 					// Build command
-					output := s.makeOutputPath("HTTP", fmt.Sprintf("http_sqlmap_%d", s.Target.Ports[i].Number))
+					output := s.makeOutputPath("HTTP", fmt.Sprintf("http_sqlmap_%d", port.Number))
 					protocol := "https"
-					if strings.Contains(strings.ToLower(service), "http") {
+					if strings.Contains(strings.ToLower(service.Name), "http") {
 						protocol = "http"
 					}
-					cmd := fmt.Sprintf("sqlmap -u %s://%s:%d --crawl=1 > %s", protocol, s.Target.Address, s.Target.Ports[i].Number, output)
+					cmd := fmt.Sprintf("sqlmap -u %s://%s:%d --crawl=1 > %s", protocol, s.Target.Address, port.Number, output)
 					// Run command
 					s.runCmd(cmd)
 
@@ -253,12 +255,12 @@ func (s *EnumScan) EnumHTTP() {
 					// FIMAP
 					// -------------------------------------------------------------------
 					// Build command
-					output = s.makeOutputPath("HTTP", fmt.Sprintf("http_fimap_%d", s.Target.Ports[i].Number))
+					output = s.makeOutputPath("HTTP", fmt.Sprintf("http_fimap_%d", port.Number))
 					protocol = "https"
-					if strings.Contains(strings.ToLower(service), "http") {
+					if strings.Contains(strings.ToLower(service.Name), "http") {
 						protocol = "http"
 					}
-					cmd = fmt.Sprintf("fimap -u \"%s://%s:%d\" > %s", protocol, s.Target.Address, s.Target.Ports[i].Number, output)
+					cmd = fmt.Sprintf("fimap -u \"%s://%s:%d\" > %s", protocol, s.Target.Address, port.Number, output)
 					// Run command
 					s.runCmd(cmd)
 				}
@@ -268,20 +270,20 @@ func (s *EnumScan) EnumHTTP() {
 }
 
 func (s *EnumScan) EnumRDP() {
-	for i := 0; i < len(s.Target.Ports); i++ {
+	for _, port := range s.Target.GetPorts(utils.Config.DB) {
 		// Enumerate only if port is open
-		if s.Target.Ports[i].Status == "open" {
+		if port.Status == "open" {
 			// Dispatch the correct scanner
-			service := s.Target.Ports[i].Service.Name
-			if strings.Contains(strings.ToLower(service), "ms-wbt-server") {
+			service := port.GetService(utils.Config.DB)
+			if strings.Contains(strings.ToLower(service.Name), "ms-wbt-server") {
 				// Start Enumerating
-				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, s.Target.Ports[i].Number, service))
+				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, service.Name))
 
 				// -----------------------------------------------------------------------
 				// NMAP
 				// -----------------------------------------------------------------------
-				name := fmt.Sprintf("rdp_nmap_%d", s.Target.Ports[i].Number)
-				nmapArgs := fmt.Sprintf("-sV --script=rdp-vuln-ms12-020 -p%d", s.Target.Ports[i].Number)
+				name := fmt.Sprintf("rdp_nmap_%d", port.Number)
+				nmapArgs := fmt.Sprintf("-sV --script=rdp-vuln-ms12-020 -p%d", port.Number)
 				nmap := NewScan(name, s.Target.Address, "RDP", name, nmapArgs)
 				nmap.RunNmap()
 			}
@@ -290,14 +292,16 @@ func (s *EnumScan) EnumRDP() {
 }
 
 func (s *EnumScan) EnumSMB() {
-	for i := 0; i < len(s.Target.Ports); i++ {
+	for _, port := range s.Target.GetPorts(utils.Config.DB) {
 		// Enumerate only if port is open
-		if s.Target.Ports[i].Status == "open" {
+		if port.Status == "open" {
 			// Dispatch the correct scanner
-			service := s.Target.Ports[i].Service.Name
-			if strings.Contains(strings.ToLower(service), "smb") || strings.Contains(strings.ToLower(service), "microsoft-ds") || strings.Contains(strings.ToLower(service), "netbios") {
+			service := port.GetService(utils.Config.DB)
+			if strings.Contains(strings.ToLower(service.Name), "smb") ||
+				strings.Contains(strings.ToLower(service.Name), "microsoft-ds") ||
+				strings.Contains(strings.ToLower(service.Name), "netbios") {
 				// Start Enumerating
-				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, s.Target.Ports[i].Number, service))
+				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, service.Name))
 
 				// POLITE
 			}
@@ -306,20 +310,20 @@ func (s *EnumScan) EnumSMB() {
 }
 
 func (s *EnumScan) EnumSMTP() {
-	for i := 0; i < len(s.Target.Ports); i++ {
+	for _, port := range s.Target.GetPorts(utils.Config.DB) {
 		// Enumerate only if port is open
-		if s.Target.Ports[i].Status == "open" {
+		if port.Status == "open" {
 			// Dispatch the correct scanner
-			service := s.Target.Ports[i].Service.Name
-			if strings.Contains(strings.ToLower(service), "smtp") {
+			service := port.GetService(utils.Config.DB)
+			if strings.Contains(strings.ToLower(service.Name), "smtp") {
 				// Start Enumerating
-				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, s.Target.Ports[i].Number, service))
+				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, service.Name))
 
 				// -----------------------------------------------------------------------
 				// NMAP
 				// -----------------------------------------------------------------------
-				name := fmt.Sprintf("smtp_nmap_%d", s.Target.Ports[i].Number)
-				nmapArgs := fmt.Sprintf("-sV -Pn --script=smtp-enum-users,smtp-vuln* --script-args='smtp-vuln-cve2010-4344.exploit' -p25,465,587,%d", s.Target.Ports[i].Number)
+				name := fmt.Sprintf("smtp_nmap_%d", port.Number)
+				nmapArgs := fmt.Sprintf("-sV -Pn --script=smtp-enum-users,smtp-vuln* --script-args='smtp-vuln-cve2010-4344.exploit' -p25,465,587,%d", port.Number)
 				nmap := NewScan(name, s.Target.Address, "SMTP", name, nmapArgs)
 				nmap.RunNmap()
 
@@ -337,20 +341,20 @@ func (s *EnumScan) EnumSMTP() {
 }
 
 func (s *EnumScan) EnumSNMP() {
-	for i := 0; i < len(s.Target.Ports); i++ {
+	for _, port := range s.Target.GetPorts(utils.Config.DB) {
 		// Enumerate only if port is open
-		if s.Target.Ports[i].Status == "open" {
+		if port.Status == "open" {
 			// Dispatch the correct scanner
-			service := s.Target.Ports[i].Service.Name
-			if strings.Contains(strings.ToLower(service), "snmp") {
+			service := port.GetService(utils.Config.DB)
+			if strings.Contains(strings.ToLower(service.Name), "snmp") {
 				// Start Enumerating
-				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, s.Target.Ports[i].Number, service))
+				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, service.Name))
 
 				// -----------------------------------------------------------------------
 				// NMAP
 				// -----------------------------------------------------------------------
-				name := fmt.Sprintf("snmp_nmap_%d", s.Target.Ports[i].Number)
-				nmapArgs := fmt.Sprintf("-sV -Pn --script=snmp-netstat,snmp-processes,snmp-win32-services,snmp-win32-shares,snmp-win32-software,snmp-win32-users -p161,162,%d", s.Target.Ports[i].Number)
+				name := fmt.Sprintf("snmp_nmap_%d", port.Number)
+				nmapArgs := fmt.Sprintf("-sV -Pn --script=snmp-netstat,snmp-processes,snmp-win32-services,snmp-win32-shares,snmp-win32-software,snmp-win32-users -p161,162,%d", port.Number)
 				nmap := NewScan(name, s.Target.Address, "SNMP", name, nmapArgs)
 				nmap.RunNmap()
 
@@ -368,14 +372,14 @@ func (s *EnumScan) EnumSNMP() {
 }
 
 func (s *EnumScan) EnumSSH() {
-	for i := 0; i < len(s.Target.Ports); i++ {
+	for _, port := range s.Target.GetPorts(utils.Config.DB) {
 		// Enumerate only if port is open
-		if s.Target.Ports[i].Status == "open" {
+		if port.Status == "open" {
 			// Dispatch the correct scanner
-			service := s.Target.Ports[i].Service.Name
-			if strings.Contains(strings.ToLower(service), "ssh") {
+			service := port.GetService(utils.Config.DB)
+			if strings.Contains(strings.ToLower(service.Name), "ssh") {
 				// Start Enumerating
-				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, s.Target.Ports[i].Number, service))
+				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, service.Name))
 				// If not polite scan
 				if s.Polite != "POLITE" {
 					// -------------------------------------------------------------------
@@ -386,7 +390,7 @@ func (s *EnumScan) EnumSSH() {
 					cmd := fmt.Sprintf("hydra -L %s -P %s -f -o %s -u %s -s %d ssh",
 						utils.WORDLIST_HYDRA_SSH_USER, utils.WORDLIST_HYDRA_SSH_PWD,
 						output,
-						s.Target.Address, s.Target.Ports[i].Number,
+						s.Target.Address, port.Number,
 					)
 					// Run command
 					s.runCmd(cmd)
@@ -397,38 +401,38 @@ func (s *EnumScan) EnumSSH() {
 }
 
 func (s *EnumScan) EnumSQL() {
-	for i := 0; i < len(s.Target.Ports); i++ {
+	for _, port := range s.Target.GetPorts(utils.Config.DB) {
 		// Enumerate only if port is open
-		if s.Target.Ports[i].Status == "open" {
+		if port.Status == "open" {
 			// Dispatch the correct scanner
-			service := s.Target.Ports[i].Service.Name
-			if strings.Contains(strings.ToLower(service), "ms-sql") {
+			service := port.GetService(utils.Config.DB)
+			if strings.Contains(strings.ToLower(service.Name), "ms-sql") {
 				// -----------------------------------------------------------------------
 				// NMAP
 				// -----------------------------------------------------------------------
-				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, s.Target.Ports[i].Number, service))
-				name := fmt.Sprintf("sql_mssql_nmap_%d", s.Target.Ports[i].Number)
-				nmapArgs := fmt.Sprintf("-sV -Pn --script=ms-sql-info,ms-sql-config,ms-sql-dump-hashes,ms-sql-brute,ms-sql-dac,ms-sql-empty-password,ms-sql-hasdbaccess,ms-sql-query,ms-sql-tables,ms-sql-xp-cmdshell --script-args mssql.instance-port=%d,mssql.username=sa,mssql.password=sa,ms-sql-query.query='SELECT * FROM master..syslogins' -p%d", s.Target.Ports[i].Number, s.Target.Ports[i].Number)
+				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, service.Name))
+				name := fmt.Sprintf("sql_mssql_nmap_%d", port.Number)
+				nmapArgs := fmt.Sprintf("-sV -Pn --script=ms-sql-info,ms-sql-config,ms-sql-dump-hashes,ms-sql-brute,ms-sql-dac,ms-sql-empty-password,ms-sql-hasdbaccess,ms-sql-query,ms-sql-tables,ms-sql-xp-cmdshell --script-args mssql.instance-port=%d,mssql.username=sa,mssql.password=sa,ms-sql-query.query='SELECT * FROM master..syslogins' -p%d", port.Number, port.Number)
 				nmap := NewScan(name, s.Target.Address, "SQL", name, nmapArgs)
 				nmap.RunNmap()
 
-			} else if strings.Contains(strings.ToLower(service), "mysql") {
+			} else if strings.Contains(strings.ToLower(service.Name), "mysql") {
 				// -----------------------------------------------------------------------
 				// NMAP
 				// -----------------------------------------------------------------------
-				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, s.Target.Ports[i].Number, service))
-				name := fmt.Sprintf("sql_mysql_nmap_%d", s.Target.Ports[i].Number)
-				nmapArgs := fmt.Sprintf("-sV -Pn --script=mysql-brute,mysql-databases,mysql-empty-password,mysql-enum,mysql-info,mysql-users,mysql-variables,mysql-vuln-cve2012-2122 -p%d", s.Target.Ports[i].Number)
+				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, service.Name))
+				name := fmt.Sprintf("sql_mysql_nmap_%d", port.Number)
+				nmapArgs := fmt.Sprintf("-sV -Pn --script=mysql-brute,mysql-databases,mysql-empty-password,mysql-enum,mysql-info,mysql-users,mysql-variables,mysql-vuln-cve2012-2122 -p%d", port.Number)
 				nmap := NewScan(name, s.Target.Address, "SQL", name, nmapArgs)
 				nmap.RunNmap()
 
-			} else if strings.Contains(strings.ToLower(service), "oracle") {
+			} else if strings.Contains(strings.ToLower(service.Name), "oracle") {
 				// -----------------------------------------------------------------------
 				// NMAP
 				// -----------------------------------------------------------------------
-				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, s.Target.Ports[i].Number, service))
-				name := fmt.Sprintf("sql_oracle_nmap_%d", s.Target.Ports[i].Number)
-				nmapArgs := fmt.Sprintf("-sV -Pn --script=oracle-brute,oracle-enum-users,oracle-sid-brute --script-args oracle-brute.sid=ORCL -p%d", s.Target.Ports[i].Number)
+				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, service.Name))
+				name := fmt.Sprintf("sql_oracle_nmap_%d", port.Number)
+				nmapArgs := fmt.Sprintf("-sV -Pn --script=oracle-brute,oracle-enum-users,oracle-sid-brute --script-args oracle-brute.sid=ORCL -p%d", port.Number)
 				nmap := NewScan(name, s.Target.Address, "SQL", name, nmapArgs)
 				nmap.RunNmap()
 
