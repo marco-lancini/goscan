@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/c-bata/go-prompt"
 	"github.com/fatih/color"
-	"goscan/core/cli"
-	"goscan/core/utils"
+	"github.com/marco-lancini/goscan/core/cli"
+	"github.com/marco-lancini/goscan/core/utils"
 	"strings"
 )
 

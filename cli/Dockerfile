@@ -1,4 +1,4 @@
-FROM golang:1.10-stretch
+FROM golang:1.10-stretch AS build
 
 # Install additional tools
 RUN curl https://raw.githubusercontent.com/pentestmonkey/finger-user-enum/master/finger-user-enum.pl -o /usr/bin/finger-user-enum.pl
@@ -11,12 +11,12 @@ RUN echo "deb http://deb.debian.org/debian stretch main contrib non-free" >> /et
 RUN apt-get update && apt-get install -y zip nmap netdiscover hydra sqlmap nikto
 
 # Setup workdir
-WORKDIR /go/src/goscan/
+WORKDIR /go/src/github.com/marco-lancini/goscan
 
 # Setup project
-#COPY goscan/ /go/src/goscan/
-#RUN make setup
-#RUN make build
+#COPY goscan/ /go/src/github.com/marco-lancini/goscan
+#RUN CGO_ENABLED=0 go build -o /bin/goscan
 
-# Debug
-CMD ["/bin/bash"]
+#FROM scratch
+#COPY --from=build /bin/goscan /bin/goscan
+#ENTRYPOINT ["/bin/goscan"]
