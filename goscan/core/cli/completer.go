@@ -3,7 +3,8 @@ package cli
 import (
 	"fmt"
 	"github.com/c-bata/go-prompt"
-	"goscan/core/utils"
+	"github.com/marco-lancini/goscan/core/model"
+	"github.com/marco-lancini/goscan/core/utils"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -37,6 +38,7 @@ func Completer(d prompt.Document) []prompt.Suggest {
 var commands = []prompt.Suggest{
 	{Text: "set_target", Description: "Set target CIDR."},
 	{Text: "set_output_folder", Description: "Set the output folder."},
+	{Text: "db", Description: "Manage DB"},
 	{Text: "show", Description: "Show results."},
 	{Text: "sweep", Description: "Perform an ARP/ping sweep."},
 	{Text: "portscan", Description: "Perform a port scan."},
@@ -58,11 +60,20 @@ func argumentsCompleter(d prompt.Document, args []string) []prompt.Suggest {
 		}
 	case "set_output_folder":
 		return fileCompleter(d)
+	case "db":
+		if len(args) == 2 {
+			second := args[1]
+			subcommands := []prompt.Suggest{
+				{Text: "reset", Description: "Reset DB"},
+			}
+			return prompt.FilterHasPrefix(subcommands, second, true)
+		}
 	case "show":
 		second := args[1]
 		if len(args) == 2 {
 			subcommands := []prompt.Suggest{
 				{Text: "hosts", Description: "Show live hosts"},
+				{Text: "ports", Description: "Show detailed ports information"},
 			}
 			return prompt.FilterHasPrefix(subcommands, second, true)
 		}
@@ -136,7 +147,7 @@ func getHostSuggestions() []prompt.Suggest {
 		Description: "Scan all live hosts",
 	})
 
-	for _, h := range utils.Config.Hosts {
+	for _, h := range model.GetAllHosts(utils.Config.DB) {
 		s = append(s, prompt.Suggest{
 			Text:        h.Address,
 			Description: fmt.Sprintf("Scan only host: %s", h.Address),
@@ -171,7 +182,6 @@ func getTargetSuggestions() []prompt.Suggest {
 			Text:        utils.ParseCIDR(ip),
 			Description: fmt.Sprintf("Subnet from interface: %s", eth),
 		})
-
 	}
 
 	return s
