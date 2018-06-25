@@ -2,8 +2,20 @@ package utils
 
 import (
 	"net"
+	"net/http"
 )
 
+func Connected() bool {
+	_, err := http.Get("https://clients3.google.com/generate_204")
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+// ---------------------------------------------------------------------------------------
+// CIDRs
+// ---------------------------------------------------------------------------------------
 // Parse a string and returns the corresponding CIDR
 func ParseCIDR(s string) string {
 	_, ipv4Net, err := net.ParseCIDR(s)

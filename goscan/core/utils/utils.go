@@ -2,10 +2,9 @@ package utils
 
 import (
 	"fmt"
-	"github.com/olekukonko/tablewriter"
-	"goscan/core/model"
+	"github.com/jinzhu/gorm"
+	"github.com/marco-lancini/goscan/core/model"
 	"os"
-	"os/user"
 	"path/filepath"
 	"strings"
 )
@@ -21,6 +20,7 @@ var Const_example_target_desc = "Target CIDR or /32 for single target"
 
 // NMAP COMMANDS
 var Const_UDP_PORTS = "19,53,69,79,111,123,135,137,138,161,177,445,500,514,520,1434,1900,5353"
+var Const_NMAP_SWEEP = "-n -sn -PE -PP"
 var Const_NMAP_TCP_FULL = "-Pn -sT -sC -A -T4 -p-"
 var Const_NMAP_TCP_STANDARD = "-Pn -sS -A -T4 --top-ports 200"
 var Const_NMAP_TCP_VULN = "-Pn -sT -sV -p- --script=vulscan/vulscan.nse"
@@ -45,7 +45,7 @@ type config struct {
 	Outfolder string
 	Target    string
 	Log       *Logger
-	Hosts     []model.Host
+	DB        *gorm.DB
 }
 
 // Initialize global config (db, logger, etc.)
@@ -55,9 +55,11 @@ func InitConfig() {
 	// Initialize logger
 	Config.Log = InitLogger()
 	// Setup Outfolder
-	usr, _ := user.Current()
-	Config.Outfolder = filepath.Join(usr.HomeDir, "goscan")
+	Config.Outfolder = filepath.Join(os.Getenv("OUT_FOLDER"), "goscan")
 	EnsureDir(Config.Outfolder)
+	// Init DB
+	Config.DB = model.InitDB()
+	Config.Log.LogDebug("Connected to DB")
 }
 
 // ---------------------------------------------------------------------------------------
@@ -127,41 +129,4 @@ func WriteArrayToFile(path string, s []string) {
 		}
 	}
 
-}
-
-// ---------------------------------------------------------------------------------------
-// HOSTS
-// ---------------------------------------------------------------------------------------
-func ShowHosts() {
-	if len(Config.Hosts) == 0 {
-		Config.Log.LogError("No hosts are up!")
-		return
-	}
-
-	Config.Log.LogNotify("The following hosts are up:")
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Status", "Address", "OS", "Ports"})
-	table.SetRowLine(true)
-	table.SetAlignment(3)
-	table.SetAutoWrapText(false)
-
-	for i := 0; i < len(Config.Hosts); i++ {
-		rStatus := Config.Hosts[i].Status
-		rAddress := Config.Hosts[i].Address
-		rOS := Config.Hosts[i].OS
-
-		if len(Config.Hosts[i].Ports) == 0 {
-			v := []string{rStatus, rAddress, rOS, ""}
-			table.Append(v)
-		} else {
-			rPorts := ""
-			for _, s := range Config.Hosts[i].Ports {
-				rPorts = fmt.Sprintf("%s* %s\n", rPorts, s.String())
-			}
-			v := []string{rStatus, rAddress, rOS, rPorts}
-			table.Append(v)
-		}
-	}
-
-	table.Render()
 }
