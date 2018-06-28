@@ -10,6 +10,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Removed
 
 
+## [1.2] - 2018-06-28
+#### Added
+- Refactored project structure (docker build)
+- Historical diff
+- Supporting SQLite DB
+
+
 ## [1.1] - 2018-05-22
 #### Fixed
 - Command Parser runtime error

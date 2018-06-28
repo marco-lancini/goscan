@@ -18,12 +18,12 @@ Binaries are available from the [Release](https://github.com/marco-lancini/gosca
 
 ```bash
 # macOS (darwin)
-wget https://github.com/marco-lancini/goscan/releases/download/v1.1/goscan_1.1_darwin_amd64.zip
-unzip goscan_1.1_darwin_amd64.zip
+wget https://github.com/marco-lancini/goscan/releases/download/v1.1/goscan_1.2_darwin_amd64.zip
+unzip goscan_1.2_darwin_amd64.zip
 
 # Linux
-wget https://github.com/marco-lancini/goscan/releases/download/v1.1/goscan_1.1_linux_amd64.zip
-unzip goscan_1.1_linux_amd64.zip
+wget https://github.com/marco-lancini/goscan/releases/download/v1.1/goscan_1.2_linux_amd64.zip
+unzip goscan_1.2_linux_amd64.zip
 
 # After that, place the executable in your PATH
 chmod +x goscan
@@ -46,7 +46,7 @@ $ make cross
 ```
 
 
-#### Docker (development only)
+#### Docker
 
 ```bash
 $ git clone https://github.com/marco-lancini/goscan.git
@@ -94,12 +94,12 @@ The _Service Enumeration_ phase currently supports the following integrations:
 
 # Todo List
 
-- [ ] Sweep: remove own IP
 - [ ] PortScan: parse scripts output
 - [ ] PortScan: dynamic nmap switches
 - [ ] Enumeration: dynamic wordlists
 - [ ] Enumeration: add services (dns, smb, snmp)
 - [ ] Import/Export (nmap, custom)
+
 
 # License
 
