@@ -14,7 +14,7 @@ import (
 // ---------------------------------------------------------------------------------------
 var Config config
 
-var Const_notification_delay_unit = 5
+var Const_notification_delay_unit = 10
 var Const_example_target_cidr = "127.0.0.1/32"
 var Const_example_target_desc = "Target CIDR or /32 for single target"
 

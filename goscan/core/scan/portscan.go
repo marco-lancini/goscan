@@ -126,6 +126,11 @@ func worker(name string, h *model.Host, folder string, file string, nmapArgs str
 	}
 	for _, p := range oldPorts {
 		utils.Config.Log.LogError(fmt.Sprintf("Port now closed: %s", p.String()))
+		// Update the Status of the port
+		mutex.Lock()
+		p.Status = "closed"
+		utils.Config.DB.Save(p)
+		mutex.Unlock()
 	}
 }
 
