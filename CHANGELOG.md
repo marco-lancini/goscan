@@ -10,6 +10,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Removed
 
 
+## [1.3] - 2018-06-28
+#### Fixed
+- Historical diff
+
+
 ## [1.2] - 2018-06-28
 #### Added
 - Refactored project structure (docker build)

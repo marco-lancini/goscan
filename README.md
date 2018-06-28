@@ -18,12 +18,12 @@ Binaries are available from the [Release](https://github.com/marco-lancini/gosca
 
 ```bash
 # macOS (darwin)
-wget https://github.com/marco-lancini/goscan/releases/download/v1.1/goscan_1.2_darwin_amd64.zip
-unzip goscan_1.2_darwin_amd64.zip
+wget https://github.com/marco-lancini/goscan/releases/download/v1.3/goscan_1.3_darwin_amd64.zip
+unzip goscan_1.3_darwin_amd64.zip
 
 # Linux
-wget https://github.com/marco-lancini/goscan/releases/download/v1.1/goscan_1.2_linux_amd64.zip
-unzip goscan_1.2_linux_amd64.zip
+wget https://github.com/marco-lancini/goscan/releases/download/v1.3/goscan_1.3_linux_amd64.zip
+unzip goscan_1.3_linux_amd64.zip
 
 # After that, place the executable in your PATH
 chmod +x goscan
