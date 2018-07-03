@@ -18,5 +18,6 @@ vendor/
 
 # Folders
 .DS_Store
-_data/
+_data/*
+!_data/_old/
 goscan/goscan
