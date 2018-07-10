@@ -38,11 +38,15 @@ func Completer(d prompt.Document) []prompt.Suggest {
 var commands = []prompt.Suggest{
 	{Text: "set_target", Description: "Set target CIDR."},
 	{Text: "set_output_folder", Description: "Set the output folder."},
+	{Text: "set_nmap_switches", Description: "Modify the default nmap switches."},
+	{Text: "set_wordlists", Description: "Modify the default wordlists."},
 	{Text: "db", Description: "Manage DB"},
 	{Text: "show", Description: "Show results."},
 	{Text: "sweep", Description: "Perform an ARP/ping sweep."},
 	{Text: "portscan", Description: "Perform a port scan."},
 	{Text: "enumerate", Description: "Perform enumeration of detected services."},
+	{Text: "dns", Description: "Perform DNS enumeration."},
+	{Text: "domain", Description: "Extract (windows) domain information from enumeration data."},
 	{Text: "help", Description: "Show help"},
 	{Text: "exit", Description: "Exit this program"},
 }
@@ -60,6 +64,116 @@ func argumentsCompleter(d prompt.Document, args []string) []prompt.Suggest {
 		}
 	case "set_output_folder":
 		return fileCompleter(d)
+	case "set_nmap_switches":
+		if len(args) == 2 {
+			second := args[1]
+			subcommands := []prompt.Suggest{
+				{Text: "SWEEP", Description: "Switches for ping sweep"},
+				{Text: "TCP_FULL", Description: "Switches for TCP FULL scan"},
+				{Text: "TCP_STANDARD", Description: "Switches for TCP STANDARD scan"},
+				{Text: "TCP_VULN", Description: "Switches for TCP VULN scan"},
+				{Text: "UDP_STANDARD", Description: "Switches for UDP STANDARD scan"},
+			}
+			return prompt.FilterHasPrefix(subcommands, second, true)
+		}
+		if len(args) == 3 {
+			second := args[1]
+			third := args[2]
+			switch second {
+				case "SWEEP":
+					subcommands := []prompt.Suggest{
+						{Text: utils.Const_NMAP_SWEEP, Description: "Default switches"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+				case "TCP_FULL":
+					subcommands := []prompt.Suggest{
+						{Text: utils.Const_NMAP_TCP_FULL, Description: "Default switches"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+				case "TCP_STANDARD":
+					subcommands := []prompt.Suggest{
+						{Text: utils.Const_NMAP_TCP_STANDARD, Description: "Default switches"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+				case "TCP_VULN":
+					subcommands := []prompt.Suggest{
+						{Text: utils.Const_NMAP_TCP_VULN, Description: "Default switches"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+				case "UDP_STANDARD":
+					subcommands := []prompt.Suggest{
+						{Text: utils.Const_NMAP_UDP_STANDARD, Description: "Default switches"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+			}
+		}
+	case "set_wordlists":
+		if len(args) == 2 {
+			second := args[1]
+			subcommands := []prompt.Suggest{
+				{Text: "FINGER_USER", Description: "Wordlist for Finger user enumeration"},
+				{Text: "FTP_USER", Description: "Wordlist for FTP user enumeration"},
+				{Text: "SMTP", Description: "Wordlist for SMTP enumeration"},
+				{Text: "SNMP", Description: "Wordlist for SNMP enumeration"},
+				{Text: "DNS_BRUTEFORCE", Description: "Wordlist for DNS bruteforce"},
+				{Text: "HYDRA_SSH_USER", Description: "Wordlist for SSH user bruteforce"},
+				{Text: "HYDRA_SSH_PASSWORD", Description: "Wordlist for SSH password bruteforce"},
+				{Text: "HYDRA_FTP_USER", Description: "Wordlist for FTP user bruteforce"},
+				{Text: "HYDRA_FTP_PASSWORD", Description: "Wordlist for FTP password bruteforce"},
+			}
+			return prompt.FilterHasPrefix(subcommands, second, true)
+		}
+		if len(args) == 3 {
+			second := args[1]
+			third := args[2]
+			switch second {
+				case "FINGER_USER":
+					subcommands := []prompt.Suggest{
+						{Text: utils.WORDLIST_FINGER_USER, Description: "Default wordlist"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+				case "FTP_USER":
+					subcommands := []prompt.Suggest{
+						{Text: utils.WORDLIST_FTP_USER, Description: "Default wordlist"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+				case "SMTP":
+					subcommands := []prompt.Suggest{
+						{Text: utils.WORDLIST_SMTP, Description: "Default wordlist"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+				case "SNMP":
+					subcommands := []prompt.Suggest{
+						{Text: utils.WORDLIST_SNMP, Description: "Default wordlist"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+				case "DNS_BRUTEFORCE":
+					subcommands := []prompt.Suggest{
+						{Text: utils.WORDLIST_DNS_BRUTEFORCE, Description: "Default wordlist"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+				case "HYDRA_SSH_USER":
+					subcommands := []prompt.Suggest{
+						{Text: utils.WORDLIST_HYDRA_SSH_USER, Description: "Default wordlist"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+				case "HYDRA_SSH_PASSWORD":
+					subcommands := []prompt.Suggest{
+						{Text: utils.WORDLIST_HYDRA_SSH_PWD, Description: "Default wordlist"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+				case "HYDRA_FTP_USER":
+					subcommands := []prompt.Suggest{
+						{Text: utils.WORDLIST_HYDRA_FTP_USER, Description: "Default wordlist"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+				case "HYDRA_FTP_PASSWORD":
+					subcommands := []prompt.Suggest{
+						{Text: utils.WORDLIST_HYDRA_FTP_PWD, Description: "Default wordlist"},
+					}
+					return prompt.FilterHasPrefix(subcommands, third, true)
+			}
+		}
 	case "db":
 		if len(args) == 2 {
 			second := args[1]
@@ -109,7 +223,6 @@ func argumentsCompleter(d prompt.Document, args []string) []prompt.Suggest {
 			second := args[1]
 			subcommands := []prompt.Suggest{
 				{Text: "ALL", Description: "Automatically identify open services and enumerate them"},
-				{Text: "DNS", Description: "Enumerate DNS"},
 				{Text: "FINGER", Description: "Enumerate FINGER"},
 				{Text: "FTP", Description: "Enumerate FTP"},
 				{Text: "HTTP", Description: "Enumerate HTTP"},
@@ -132,6 +245,40 @@ func argumentsCompleter(d prompt.Document, args []string) []prompt.Suggest {
 		}
 		if len(args) == 4 {
 			return prompt.FilterContains(getHostSuggestions(), args[3], true)
+		}
+	case "dns":
+		if len(args) == 2 {
+			subcommands := []prompt.Suggest{
+				{Text: "DISCOVERY", Description: "Enumerate DNS (nmap, dnsrecon, dnsenum)"},
+				{Text: "BRUTEFORCE", Description: "Bruteforce DNS"},
+				{Text: "BRUTEFORCE_REVERSE", Description: "Reverse Bruteforce DNS"},
+			}
+			return prompt.FilterHasPrefix(subcommands, args[1], true)
+		}
+		if len(args) == 3 {
+			subcommands := []prompt.Suggest{
+				{Text: "domain.com", Description: "Target domain"},
+			}
+			return prompt.FilterHasPrefix(subcommands, args[2], true)
+		}
+		if len(args) == 4 {
+			first := args[1]
+			switch first {
+				case "BRUTEFORCE_REVERSE":
+					subcommands := []prompt.Suggest{
+						{Text: "10.0.0.10", Description: "Base IP"},
+					}
+					return prompt.FilterHasPrefix(subcommands, args[3], true)
+			}
+		}
+	case "domain":
+		if len(args) == 2 {
+			subcommands := []prompt.Suggest{
+				{Text: "users", Description: "Extract users from enumeration data"},
+				{Text: "hosts", Description: "Extract hosts from enumeration data"},
+				{Text: "servers", Description: "Extract servers from enumeration data"},
+			}
+			return prompt.FilterHasPrefix(subcommands, args[1], true)
 		}
 	default:
 		return []prompt.Suggest{}

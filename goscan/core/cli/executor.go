@@ -19,6 +19,10 @@ func Executor(s string) {
 			cmdSetTarget(args)
 		case "set_output_folder":
 			cmdSetOutputFolder(args)
+		case "set_nmap_switches":
+			cmdSetNmapSwitches(args)
+		case "set_wordlists":
+			cmdSetWordlists(args)
 		case "help":
 			cmdHelp()
 		case "sweep":
@@ -27,6 +31,10 @@ func Executor(s string) {
 			cmdPortscan(args)
 		case "enumerate":
 			cmdEnumerate(args)
+		case "dns":
+			cmdDNS(args)
+		case "domain":
+			cmdDomain(args)
 		case "db":
 			cmdDB(args)
 		case "show":
@@ -74,6 +82,94 @@ func cmdSetOutputFolder(args []string) {
 	utils.EnsureDir(utils.Config.Outfolder)
 }
 
+func cmdSetNmapSwitches(args []string) {
+	// Get kind
+	kind, args := utils.ParseNextArg(args)
+	// Get all switches
+	switches := utils.ParseAllArgs(args)
+	// Update value
+	switch kind {
+		case "SWEEP":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_SWEEP))
+			utils.Const_NMAP_SWEEP = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_SWEEP))
+
+		case "TCP_FULL":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_TCP_FULL))
+			utils.Const_NMAP_TCP_FULL = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_TCP_FULL))
+
+		case "TCP_STANDARD":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_TCP_STANDARD))
+			utils.Const_NMAP_TCP_STANDARD = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_TCP_STANDARD))
+
+		case "TCP_VULN":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_TCP_VULN))
+			utils.Const_NMAP_TCP_VULN = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_TCP_VULN))
+
+		case "UDP_STANDARD":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_UDP_STANDARD))
+			utils.Const_NMAP_UDP_STANDARD = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_UDP_STANDARD))
+	}
+}
+
+func cmdSetWordlists(args []string) {
+	// Get kind
+	kind, args := utils.ParseNextArg(args)
+	// Get wordlist
+	switches, _ := utils.ParseNextArg(args)
+	// Update value
+	switch kind {
+		case "FINGER_USER":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_FINGER_USER))
+			utils.WORDLIST_FINGER_USER = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_FINGER_USER))
+
+		case "FTP_USER":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_FTP_USER))
+			utils.WORDLIST_FTP_USER = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_FTP_USER))
+
+		case "SMTP":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_SMTP))
+			utils.WORDLIST_SMTP = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_SMTP))
+
+		case "SNMP":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_SNMP))
+			utils.WORDLIST_SNMP = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_SNMP))
+
+		case "DNS_BRUTEFORCE":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_DNS_BRUTEFORCE))
+			utils.WORDLIST_DNS_BRUTEFORCE = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_DNS_BRUTEFORCE))
+		
+		case "HYDRA_SSH_USER":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_HYDRA_SSH_USER))
+			utils.WORDLIST_HYDRA_SSH_USER = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_HYDRA_SSH_USER))
+
+		case "HYDRA_SSH_PASSWORD":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_HYDRA_SSH_PWD))
+			utils.WORDLIST_HYDRA_SSH_PWD = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_HYDRA_SSH_PWD))
+
+		case "HYDRA_FTP_USER":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_HYDRA_FTP_USER))
+			utils.WORDLIST_HYDRA_FTP_USER = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_HYDRA_FTP_USER))
+		
+		case "HYDRA_FTP_PASSWORD":
+			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_HYDRA_FTP_PWD))
+			utils.WORDLIST_HYDRA_FTP_PWD = switches
+			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_HYDRA_FTP_PWD))
+	}
+}
+
 
 // ---------------------------------------------------------------------------------------
 // HELP
@@ -84,14 +180,19 @@ func cmdHelp() {
 
 	data := [][]string{
 		[]string{"Set output folder", "set_output_folder <PATH>"},
+		[]string{"Modify the default nmap switches", "set_nmap_switches <SWEEP/TCP_FULL/TCP_STANDARD/TCP_VULN/UDP_STANDARD>"},
+		[]string{"Modify the default wordlists", "set_wordlists <FINGER_USER/FTP_USER/...>"},
 		[]string{"Ping Sweep", "sweep <TYPE> <TARGET>"},
 		[]string{"Port Scan", "portscan <TYPE> <TARGET>"},
 		[]string{"Service Enumeration", "enumerate <TYPE> <POLITE/AGGRESSIVE> <TARGET>"},
+		[]string{"DNS Enumeration", "dns <DISCOVERY/BRUTEFORCE/BRUTEFORCE_REVERSE> <DOMAIN> [<BASE_IP>]"},
+		[]string{"Extract (windows) domain information from enumeration data", "domain <users/hosts/servers>"},
 		[]string{"Show live hosts", "show hosts"},
 		[]string{"Show detailed ports information", "show ports"},
 		[]string{"Manage DB", "db <reset>"},
 		[]string{"Exit this program", "exit"},
 	}
+
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Command", "Syntax"})
 	table.SetAlignment(3)
@@ -149,6 +250,35 @@ func cmdEnumerate(args []string) {
 	scan.ScanEnumerate(target, polite, kind)
 }
 
+func cmdDNS(args []string) {
+	if len(args) < 2 {
+		utils.Config.Log.LogError("Invalid command provided")
+		return
+	}
+	// Get type of scan
+	kind, args := utils.ParseNextArg(args)
+	// Get target domain
+	target, args := utils.ParseNextArg(args)
+	// Get base ip
+	baseIP := ""
+	if kind == "BRUTEFORCE_REVERSE" {
+		baseIP, _ = utils.ParseNextArg(args)
+	}
+	// Perform port scan
+	scan.ScanDNS(target, kind, baseIP)
+}
+
+func cmdDomain(args []string) {
+	if len(args) != 1 {
+		utils.Config.Log.LogError("Invalid command provided")
+		return
+	}
+	// Get type
+	kind, _ := utils.ParseNextArg(args)
+	// Gather data
+	scan.GatherDomain(kind)
+}
+
 
 // ---------------------------------------------------------------------------------------
 // DB
@@ -158,7 +288,6 @@ func cmdDB(args []string) {
 		utils.Config.Log.LogError("Invalid command provided")
 		return
 	}
-
 	what, _ := utils.ParseNextArg(args)
 	switch what {
 		case "reset":
