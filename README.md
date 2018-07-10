@@ -18,16 +18,16 @@ Binaries are available from the [Release](https://github.com/marco-lancini/gosca
 
 ```bash
 # macOS (darwin)
-wget https://github.com/marco-lancini/goscan/releases/download/v1.3/goscan_1.3_darwin_amd64.zip
-unzip goscan_1.3_darwin_amd64.zip
+$ wget https://github.com/marco-lancini/goscan/releases/download/v1.4/goscan_1.4_darwin_amd64.zip
+$ unzip goscan_1.4_darwin_amd64.zip
 
 # Linux
-wget https://github.com/marco-lancini/goscan/releases/download/v1.3/goscan_1.3_linux_amd64.zip
-unzip goscan_1.3_linux_amd64.zip
+$ wget https://github.com/marco-lancini/goscan/releases/download/v1.4/goscan_1.4_linux_amd64.zip
+$ unzip goscan_1.4_linux_amd64.zip
 
 # After that, place the executable in your PATH
-chmod +x goscan
-sudo mv ./goscan /usr/local/bin/goscan
+$ chmod +x goscan
+$ sudo mv ./goscan /usr/local/bin/goscan
 ```
 
 #### Build from source
@@ -59,46 +59,65 @@ $ docker-compose up --build
 
 # Usage
 
-GoScan supports the 3 main steps of network enumeration:
+GoScan supports all the main steps of network enumeration:
 
 1. Host Discovery (ARP + ping sweep): `sweep <TYPE> <TARGET>`
 2. Port Scanning: `portscan <TYPE> <TARGET>`
 3. Service Enumeration: `enumerate <TYPE> <POLITE/AGGRESSIVE> <TARGET>`
 
-In addition, it has a couple of supporting commands
+Plus some more:
 
-- Change output folder (by default `~/goscan`): `set_output_folder <PATH>`
-- Show collected data: `show hosts`
+4. DNS enumeration: `dns <DISCOVERY/BRUTEFORCE/BRUTEFORCE_REVERSE> <DOMAIN> [<BASE_IP>]`
+5. Domain enumeration (Extract windows domain information from enumeration data): `domain <users/hosts/servers>`
 
 
-#### External Integrations
+In addition, it has a few supporting commands:
+
+- Change the output folder (by default `~/goscan`): `set_output_folder <PATH>`
+- Modify the default nmap switches: `set_nmap_switches <SWEEP/TCP_FULL/TCP_STANDARD/TCP_VULN/UDP_STANDARD>`
+- Modify the default wordlists: `set_wordlists <FINGER_USER/FTP_USER/...>`
+- Show live hosts: `show hosts`
+- Show detailed ports information: `show ports`
+- Reset the database: `db reset`
+
+
+
+## Full Command List
+
+| COMMAND |  SYNTAX  |
+| ------- | -------- |
+| Set output folder                    | `set_output_folder <PATH>` |
+| Modify the default nmap switches     | `set_nmap_switches <SWEEP/TCP_FULL/TCP_STANDARD/TCP_VULN/UDP_STANDARD>` |
+| Modify the default wordlists         | `set_wordlists <FINGER_USER/FTP_USER/...>` |
+| Ping Sweep                           | `sweep <TYPE> <TARGET>` |
+| Port Scan                            | `portscan <TYPE> <TARGET>` |
+| Service Enumeration                  | `enumerate <TYPE> <POLITE/AGGRESSIVE> <TARGET>` |
+| DNS Enumeration                      | `dns <DISCOVERY/BRUTEFORCE/BRUTEFORCE_REVERSE> <DOMAIN> [<BASE_IP>]` |
+| Extract (windows) domain information from enumeration data | `domain <users/hosts/servers>` |
+| Show live hosts                      | `show hosts` |
+| Show detailed ports information      | `show ports` |
+| Manage DB                            | `db <reset>` |
+| Exit this program                    | `exit` |
+
+
+
+## External Integrations
 
 The _Service Enumeration_ phase currently supports the following integrations:
 
 | WHAT | INTEGRATION |
 | ---- | ----------- |
 | ARP  | <ul><li>nmap</li><li>netdiscover</li></ul> |
-| DNS  | <ul><li>nmap</li></ul> |
+| DNS  | <ul><li>nmap</li><li>dnsrecon</li><li>dnsenum</li><li>host</li></ul> |
 | FINGER  | <ul><li>nmap</li><li>finger-user-enum</li></ul> |
 | FTP  | <ul><li>nmap</li><li>ftp-user-enum</li><li>hydra</li></ul> |
 | HTTP | <ul><li>nmap</li><li>nikto</li><li>dirb</li><li>sqlmap</li><li>fimap</li></ul> |
 | RDP  | <ul><li>nmap</li></ul> |
-| SMB  |  |
-| SMTP  | <ul><li>nmap</li><li>smtp-user-enum</li></ul> |
-| SNMP  | <ul><li>nmap</li><li>snmpcheck</li></ul> |
+| SMB  | <ul><li>nmap</li><li>enum4linux</li><li>nbtscan</li><li>samrdump</li></ul> |
+| SMTP | <ul><li>nmap</li><li>smtp-user-enum</li></ul> |
+| SNMP | <ul><li>nmap</li><li>snmpcheck</li><li>onesixtyone</li><li>snmpwalk</li></ul> |
 | SSH  | <ul><li>hydra</li></ul> |
 | SQL  | <ul><li>nmap</li></ul> |
-
-
-
-
-# Todo List
-
-- [ ] PortScan: parse scripts output
-- [ ] PortScan: dynamic nmap switches
-- [ ] Enumeration: dynamic wordlists
-- [ ] Enumeration: add services (dns, smb, snmp)
-- [ ] Import/Export (nmap, custom)
 
 
 # License
