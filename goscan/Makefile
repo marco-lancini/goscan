@@ -1,5 +1,5 @@
 NAME := goscan
-VERSION := 1.4
+VERSION := 1.5
 AUTHOR := Marco Lancini [@LanciniMarco]
 LDFLAGS := -X 'main.version=$(VERSION)' -X 'main.author=$(AUTHOR)'
 
