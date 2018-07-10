@@ -15,43 +15,42 @@ func Executor(s string) {
 
 	// Execute commands
 	switch cmd {
-		case "set_target":
-			cmdSetTarget(args)
-		case "set_output_folder":
-			cmdSetOutputFolder(args)
-		case "set_nmap_switches":
-			cmdSetNmapSwitches(args)
-		case "set_wordlists":
-			cmdSetWordlists(args)
-		case "help":
-			cmdHelp()
-		case "sweep":
-			cmdSweep(args)
-		case "portscan":
-			cmdPortscan(args)
-		case "enumerate":
-			cmdEnumerate(args)
-		case "dns":
-			cmdDNS(args)
-		case "domain":
-			cmdDomain(args)
-		case "db":
-			cmdDB(args)
-		case "show":
-			cmdShow(args)
-		case "exit", "quit":
-			os.Exit(0)
-			return
-		case "":
-		default:
-			return
+	case "set_target":
+		cmdSetTarget(args)
+	case "set_output_folder":
+		cmdSetOutputFolder(args)
+	case "set_nmap_switches":
+		cmdSetNmapSwitches(args)
+	case "set_wordlists":
+		cmdSetWordlists(args)
+	case "help":
+		cmdHelp()
+	case "sweep":
+		cmdSweep(args)
+	case "portscan":
+		cmdPortscan(args)
+	case "enumerate":
+		cmdEnumerate(args)
+	case "dns":
+		cmdDNS(args)
+	case "domain":
+		cmdDomain(args)
+	case "db":
+		cmdDB(args)
+	case "show":
+		cmdShow(args)
+	case "exit", "quit":
+		os.Exit(0)
+		return
+	case "":
+	default:
+		return
 	}
 
 	// Start checking for running scans
 	go scan.ReportStatusNmap()
 	go scan.ReportStatusEnum()
 }
-
 
 // ---------------------------------------------------------------------------------------
 // SET
@@ -89,30 +88,30 @@ func cmdSetNmapSwitches(args []string) {
 	switches := utils.ParseAllArgs(args)
 	// Update value
 	switch kind {
-		case "SWEEP":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_SWEEP))
-			utils.Const_NMAP_SWEEP = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_SWEEP))
+	case "SWEEP":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_SWEEP))
+		utils.Const_NMAP_SWEEP = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_SWEEP))
 
-		case "TCP_FULL":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_TCP_FULL))
-			utils.Const_NMAP_TCP_FULL = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_TCP_FULL))
+	case "TCP_FULL":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_TCP_FULL))
+		utils.Const_NMAP_TCP_FULL = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_TCP_FULL))
 
-		case "TCP_STANDARD":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_TCP_STANDARD))
-			utils.Const_NMAP_TCP_STANDARD = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_TCP_STANDARD))
+	case "TCP_STANDARD":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_TCP_STANDARD))
+		utils.Const_NMAP_TCP_STANDARD = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_TCP_STANDARD))
 
-		case "TCP_VULN":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_TCP_VULN))
-			utils.Const_NMAP_TCP_VULN = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_TCP_VULN))
+	case "TCP_VULN":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_TCP_VULN))
+		utils.Const_NMAP_TCP_VULN = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_TCP_VULN))
 
-		case "UDP_STANDARD":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_UDP_STANDARD))
-			utils.Const_NMAP_UDP_STANDARD = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_UDP_STANDARD))
+	case "UDP_STANDARD":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.Const_NMAP_UDP_STANDARD))
+		utils.Const_NMAP_UDP_STANDARD = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.Const_NMAP_UDP_STANDARD))
 	}
 }
 
@@ -123,53 +122,52 @@ func cmdSetWordlists(args []string) {
 	switches, _ := utils.ParseNextArg(args)
 	// Update value
 	switch kind {
-		case "FINGER_USER":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_FINGER_USER))
-			utils.WORDLIST_FINGER_USER = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_FINGER_USER))
+	case "FINGER_USER":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_FINGER_USER))
+		utils.WORDLIST_FINGER_USER = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_FINGER_USER))
 
-		case "FTP_USER":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_FTP_USER))
-			utils.WORDLIST_FTP_USER = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_FTP_USER))
+	case "FTP_USER":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_FTP_USER))
+		utils.WORDLIST_FTP_USER = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_FTP_USER))
 
-		case "SMTP":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_SMTP))
-			utils.WORDLIST_SMTP = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_SMTP))
+	case "SMTP":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_SMTP))
+		utils.WORDLIST_SMTP = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_SMTP))
 
-		case "SNMP":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_SNMP))
-			utils.WORDLIST_SNMP = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_SNMP))
+	case "SNMP":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_SNMP))
+		utils.WORDLIST_SNMP = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_SNMP))
 
-		case "DNS_BRUTEFORCE":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_DNS_BRUTEFORCE))
-			utils.WORDLIST_DNS_BRUTEFORCE = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_DNS_BRUTEFORCE))
-		
-		case "HYDRA_SSH_USER":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_HYDRA_SSH_USER))
-			utils.WORDLIST_HYDRA_SSH_USER = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_HYDRA_SSH_USER))
+	case "DNS_BRUTEFORCE":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_DNS_BRUTEFORCE))
+		utils.WORDLIST_DNS_BRUTEFORCE = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_DNS_BRUTEFORCE))
 
-		case "HYDRA_SSH_PASSWORD":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_HYDRA_SSH_PWD))
-			utils.WORDLIST_HYDRA_SSH_PWD = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_HYDRA_SSH_PWD))
+	case "HYDRA_SSH_USER":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_HYDRA_SSH_USER))
+		utils.WORDLIST_HYDRA_SSH_USER = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_HYDRA_SSH_USER))
 
-		case "HYDRA_FTP_USER":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_HYDRA_FTP_USER))
-			utils.WORDLIST_HYDRA_FTP_USER = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_HYDRA_FTP_USER))
-		
-		case "HYDRA_FTP_PASSWORD":
-			utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_HYDRA_FTP_PWD))
-			utils.WORDLIST_HYDRA_FTP_PWD = switches
-			utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_HYDRA_FTP_PWD))
+	case "HYDRA_SSH_PASSWORD":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_HYDRA_SSH_PWD))
+		utils.WORDLIST_HYDRA_SSH_PWD = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_HYDRA_SSH_PWD))
+
+	case "HYDRA_FTP_USER":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_HYDRA_FTP_USER))
+		utils.WORDLIST_HYDRA_FTP_USER = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_HYDRA_FTP_USER))
+
+	case "HYDRA_FTP_PASSWORD":
+		utils.Config.Log.LogInfo(fmt.Sprintf("Previous value: %s", utils.WORDLIST_HYDRA_FTP_PWD))
+		utils.WORDLIST_HYDRA_FTP_PWD = switches
+		utils.Config.Log.LogNotify(fmt.Sprintf("Updated value: %s", utils.WORDLIST_HYDRA_FTP_PWD))
 	}
 }
-
 
 // ---------------------------------------------------------------------------------------
 // HELP
@@ -200,7 +198,6 @@ func cmdHelp() {
 	table.AppendBulk(data)
 	table.Render()
 }
-
 
 // ---------------------------------------------------------------------------------------
 // SCAN
@@ -279,7 +276,6 @@ func cmdDomain(args []string) {
 	scan.GatherDomain(kind)
 }
 
-
 // ---------------------------------------------------------------------------------------
 // DB
 // ---------------------------------------------------------------------------------------
@@ -290,12 +286,11 @@ func cmdDB(args []string) {
 	}
 	what, _ := utils.ParseNextArg(args)
 	switch what {
-		case "reset":
-			utils.Config.Log.LogInfo("Resetting DB")
-			model.ResetDB(utils.Config.DB)
+	case "reset":
+		utils.Config.Log.LogInfo("Resetting DB")
+		model.ResetDB(utils.Config.DB)
 	}
 }
-
 
 // ---------------------------------------------------------------------------------------
 // SHOW
@@ -307,10 +302,10 @@ func cmdShow(args []string) {
 	}
 	what, _ := utils.ParseNextArg(args)
 	switch what {
-		case "hosts":
-			ShowHosts()
-		case "ports":
-			ShowPorts()
+	case "hosts":
+		ShowHosts()
+	case "ports":
+		ShowPorts()
 	}
 }
 

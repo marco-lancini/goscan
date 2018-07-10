@@ -57,8 +57,8 @@ type Service struct {
 	Version string
 	Product string
 	OsType  string
-	PortID uint `gorm:"unique_index:idx_service"`
-	Port   *Port
+	PortID  uint `gorm:"unique_index:idx_service"`
+	Port    *Port
 }
 
 // Print to string
@@ -86,7 +86,6 @@ func AddService(db *gorm.DB, name, version, product, ostype string, p *Port) *Se
 	return t
 }
 
-
 // ---------------------------------------------------------------------------------------
 // PORT
 // ---------------------------------------------------------------------------------------
@@ -95,9 +94,9 @@ type Port struct {
 	Number   int    `gorm:"unique_index:idx_port"`
 	Protocol string `gorm:"unique_index:idx_port"`
 	Status   string `gorm:"unique_index:idx_port"`
-	Service Service
-	HostID uint `gorm:"unique_index:idx_port"`
-	Host   *Host
+	Service  Service
+	HostID   uint `gorm:"unique_index:idx_port"`
+	Host     *Host
 }
 
 // Print to string
@@ -145,7 +144,6 @@ func (p *Port) FindOriginalPort(db *gorm.DB) *Port {
 	return res
 }
 
-
 // ---------------------------------------------------------------------------------------
 // HOST
 // ---------------------------------------------------------------------------------------
@@ -155,7 +153,7 @@ type Host struct {
 	Status  string
 	OS      string
 	Info    string
-	Ports []Port
+	Ports   []Port
 }
 
 // Print to string
@@ -189,8 +187,8 @@ func AddHost(db *gorm.DB, address string, status string) *Host {
 	return t
 }
 
-func AddHostsBulk(db *gorm.DB, source_file string) {
-	file, err := os.Open(source_file)
+func AddHostsBulk(db *gorm.DB, sourceFile string) {
+	file, err := os.Open(sourceFile)
 	if err != nil {
 		fmt.Println(fmt.Sprintf("Error while reading source file: %s", err))
 	}

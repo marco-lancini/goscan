@@ -80,31 +80,31 @@ func argumentsCompleter(d prompt.Document, args []string) []prompt.Suggest {
 			second := args[1]
 			third := args[2]
 			switch second {
-				case "SWEEP":
-					subcommands := []prompt.Suggest{
-						{Text: utils.Const_NMAP_SWEEP, Description: "Default switches"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
-				case "TCP_FULL":
-					subcommands := []prompt.Suggest{
-						{Text: utils.Const_NMAP_TCP_FULL, Description: "Default switches"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
-				case "TCP_STANDARD":
-					subcommands := []prompt.Suggest{
-						{Text: utils.Const_NMAP_TCP_STANDARD, Description: "Default switches"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
-				case "TCP_VULN":
-					subcommands := []prompt.Suggest{
-						{Text: utils.Const_NMAP_TCP_VULN, Description: "Default switches"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
-				case "UDP_STANDARD":
-					subcommands := []prompt.Suggest{
-						{Text: utils.Const_NMAP_UDP_STANDARD, Description: "Default switches"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
+			case "SWEEP":
+				subcommands := []prompt.Suggest{
+					{Text: utils.Const_NMAP_SWEEP, Description: "Default switches"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
+			case "TCP_FULL":
+				subcommands := []prompt.Suggest{
+					{Text: utils.Const_NMAP_TCP_FULL, Description: "Default switches"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
+			case "TCP_STANDARD":
+				subcommands := []prompt.Suggest{
+					{Text: utils.Const_NMAP_TCP_STANDARD, Description: "Default switches"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
+			case "TCP_VULN":
+				subcommands := []prompt.Suggest{
+					{Text: utils.Const_NMAP_TCP_VULN, Description: "Default switches"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
+			case "UDP_STANDARD":
+				subcommands := []prompt.Suggest{
+					{Text: utils.Const_NMAP_UDP_STANDARD, Description: "Default switches"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
 			}
 		}
 	case "set_wordlists":
@@ -127,51 +127,51 @@ func argumentsCompleter(d prompt.Document, args []string) []prompt.Suggest {
 			second := args[1]
 			third := args[2]
 			switch second {
-				case "FINGER_USER":
-					subcommands := []prompt.Suggest{
-						{Text: utils.WORDLIST_FINGER_USER, Description: "Default wordlist"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
-				case "FTP_USER":
-					subcommands := []prompt.Suggest{
-						{Text: utils.WORDLIST_FTP_USER, Description: "Default wordlist"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
-				case "SMTP":
-					subcommands := []prompt.Suggest{
-						{Text: utils.WORDLIST_SMTP, Description: "Default wordlist"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
-				case "SNMP":
-					subcommands := []prompt.Suggest{
-						{Text: utils.WORDLIST_SNMP, Description: "Default wordlist"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
-				case "DNS_BRUTEFORCE":
-					subcommands := []prompt.Suggest{
-						{Text: utils.WORDLIST_DNS_BRUTEFORCE, Description: "Default wordlist"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
-				case "HYDRA_SSH_USER":
-					subcommands := []prompt.Suggest{
-						{Text: utils.WORDLIST_HYDRA_SSH_USER, Description: "Default wordlist"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
-				case "HYDRA_SSH_PASSWORD":
-					subcommands := []prompt.Suggest{
-						{Text: utils.WORDLIST_HYDRA_SSH_PWD, Description: "Default wordlist"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
-				case "HYDRA_FTP_USER":
-					subcommands := []prompt.Suggest{
-						{Text: utils.WORDLIST_HYDRA_FTP_USER, Description: "Default wordlist"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
-				case "HYDRA_FTP_PASSWORD":
-					subcommands := []prompt.Suggest{
-						{Text: utils.WORDLIST_HYDRA_FTP_PWD, Description: "Default wordlist"},
-					}
-					return prompt.FilterHasPrefix(subcommands, third, true)
+			case "FINGER_USER":
+				subcommands := []prompt.Suggest{
+					{Text: utils.WORDLIST_FINGER_USER, Description: "Default wordlist"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
+			case "FTP_USER":
+				subcommands := []prompt.Suggest{
+					{Text: utils.WORDLIST_FTP_USER, Description: "Default wordlist"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
+			case "SMTP":
+				subcommands := []prompt.Suggest{
+					{Text: utils.WORDLIST_SMTP, Description: "Default wordlist"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
+			case "SNMP":
+				subcommands := []prompt.Suggest{
+					{Text: utils.WORDLIST_SNMP, Description: "Default wordlist"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
+			case "DNS_BRUTEFORCE":
+				subcommands := []prompt.Suggest{
+					{Text: utils.WORDLIST_DNS_BRUTEFORCE, Description: "Default wordlist"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
+			case "HYDRA_SSH_USER":
+				subcommands := []prompt.Suggest{
+					{Text: utils.WORDLIST_HYDRA_SSH_USER, Description: "Default wordlist"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
+			case "HYDRA_SSH_PASSWORD":
+				subcommands := []prompt.Suggest{
+					{Text: utils.WORDLIST_HYDRA_SSH_PWD, Description: "Default wordlist"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
+			case "HYDRA_FTP_USER":
+				subcommands := []prompt.Suggest{
+					{Text: utils.WORDLIST_HYDRA_FTP_USER, Description: "Default wordlist"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
+			case "HYDRA_FTP_PASSWORD":
+				subcommands := []prompt.Suggest{
+					{Text: utils.WORDLIST_HYDRA_FTP_PWD, Description: "Default wordlist"},
+				}
+				return prompt.FilterHasPrefix(subcommands, third, true)
 			}
 		}
 	case "db":
@@ -264,11 +264,11 @@ func argumentsCompleter(d prompt.Document, args []string) []prompt.Suggest {
 		if len(args) == 4 {
 			first := args[1]
 			switch first {
-				case "BRUTEFORCE_REVERSE":
-					subcommands := []prompt.Suggest{
-						{Text: "10.0.0.10", Description: "Base IP"},
-					}
-					return prompt.FilterHasPrefix(subcommands, args[3], true)
+			case "BRUTEFORCE_REVERSE":
+				subcommands := []prompt.Suggest{
+					{Text: "10.0.0.10", Description: "Base IP"},
+				}
+				return prompt.FilterHasPrefix(subcommands, args[3], true)
 			}
 		}
 	case "domain":

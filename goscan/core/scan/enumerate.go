@@ -320,7 +320,7 @@ func (s *EnumScan) EnumSMB() {
 				nmapArgs = fmt.Sprintf("-v -p 137,138,139,445%d -sU --script nbstat.nse", port.Number)
 				nmap = NewScan(name, s.Target.Address, "SMB", name, nmapArgs)
 				nmap.RunNmap()
-			
+
 				// -----------------------------------------------------------------------
 				// ENUM4LINUX
 				// -----------------------------------------------------------------------

@@ -1,12 +1,8 @@
 package scan
 
 import (
-	// "strings"
 	"fmt"
-	// "os"
 	"github.com/marco-lancini/goscan/core/utils"
-	// "path/filepath"
-	// "bufio"
 )
 
 // ---------------------------------------------------------------------------------------
@@ -15,18 +11,17 @@ import (
 func GatherDomain(kind string) {
 	// Dispatch scan
 	switch kind {
-		case "users":
-			gatherUsers()
-		case "hosts":
-			gatherHosts()
-		case "servers":
-			gatherServers()
-		default:
-			utils.Config.Log.LogError("Invalid type of scan")
-			return
+	case "users":
+		gatherUsers()
+	case "hosts":
+		gatherHosts()
+	case "servers":
+		gatherServers()
+	default:
+		utils.Config.Log.LogError("Invalid type of scan")
+		return
 	}
 }
-
 
 func gatherUsers() {
 	utils.Config.Log.LogNotify("Users:")
@@ -39,7 +34,6 @@ func gatherUsers() {
 	results = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 }
-
 
 func gatherHosts() {
 	utils.Config.Log.LogNotify("Computer name:")
@@ -87,7 +81,6 @@ func gatherHosts() {
 	results = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 }
-
 
 func gatherServers() {
 

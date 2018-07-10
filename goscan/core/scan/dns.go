@@ -1,12 +1,12 @@
 package scan
 
 import (
-	"strings"
-	"fmt"
-	"os"
-	"github.com/marco-lancini/goscan/core/utils"
-	"path/filepath"
 	"bufio"
+	"fmt"
+	"github.com/marco-lancini/goscan/core/utils"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 // ---------------------------------------------------------------------------------------
@@ -15,15 +15,15 @@ import (
 func ScanDNS(target string, kind string, baseIP string) {
 	// Dispatch scan
 	switch kind {
-		case "DISCOVERY":
-			DNSDiscovery(target)
-		case "BRUTEFORCE":
-			DNSBruteforce(target)
-		case "BRUTEFORCE_REVERSE":
-			DNSBruteforceReverse(target, baseIP)
-		default:
-			utils.Config.Log.LogError("Invalid type of scan")
-			return
+	case "DISCOVERY":
+		DNSDiscovery(target)
+	case "BRUTEFORCE":
+		DNSBruteforce(target)
+	case "BRUTEFORCE_REVERSE":
+		DNSBruteforceReverse(target, baseIP)
+	default:
+		utils.Config.Log.LogError("Invalid type of scan")
+		return
 	}
 }
 
@@ -64,7 +64,6 @@ func DNSDiscovery(target string) {
 	utils.Config.Log.LogNotify("DNS Discovery Completed")
 }
 
-
 func DNSBruteforce(target string) {
 	utils.Config.Log.LogNotify("Starting DNS Bruteforce...")
 
@@ -74,8 +73,8 @@ func DNSBruteforce(target string) {
 	wordlistFile, _ := os.Open(utils.WORDLIST_DNS_BRUTEFORCE)
 	defer wordlistFile.Close()
 	scanner := bufio.NewScanner(wordlistFile)
-	scanner.Split(bufio.ScanLines) 	
-	
+	scanner.Split(bufio.ScanLines)
+
 	// -----------------------------------------------------------------------------------
 	// QUERY HOST
 	// -----------------------------------------------------------------------------------
@@ -94,7 +93,7 @@ func DNSBruteforce(target string) {
 				hosts = append(hosts, out)
 				utils.Config.Log.LogNotify(out)
 			}
-		} 	
+		}
 	}
 
 	// -----------------------------------------------------------------------------------
@@ -102,16 +101,15 @@ func DNSBruteforce(target string) {
 	// -----------------------------------------------------------------------------------
 	outfile := filepath.Join(utils.Config.Outfolder, utils.CleanPath(target), "dns_bruteforce_forward")
 	utils.WriteArrayToFile(outfile, hosts)
-	
+
 	utils.Config.Log.LogNotify("DNS Bruteforce Completed")
 }
-
 
 func DNSBruteforceReverse(target string, baseIP string) {
 	utils.Config.Log.LogNotify("Starting Reverse DNS Bruteforce...")
 	lower, upper := 0, 255
 	hosts := []string{}
-	tokens := strings.Split(baseIP, ".")	
+	tokens := strings.Split(baseIP, ".")
 	prefix := strings.Join(tokens[:3], ".")
 
 	// -----------------------------------------------------------------------------------
@@ -131,7 +129,7 @@ func DNSBruteforceReverse(target string, baseIP string) {
 				hosts = append(hosts, out)
 				utils.Config.Log.LogNotify(out)
 			}
-		} 
+		}
 	}
 
 	// -----------------------------------------------------------------------------------
@@ -139,6 +137,6 @@ func DNSBruteforceReverse(target string, baseIP string) {
 	// -----------------------------------------------------------------------------------
 	outfile := filepath.Join(utils.Config.Outfolder, utils.CleanPath(target), "dns_bruteforce_reverse")
 	utils.WriteArrayToFile(outfile, hosts)
-	
+
 	utils.Config.Log.LogNotify("DNS Reverse Bruteforce Completed")
 }
