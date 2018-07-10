@@ -8,7 +8,7 @@ RUN curl http://www.nothink.org/codes/snmpcheck/snmpcheck-1.8.pl -o /usr/bin/snm
 
 # Update
 RUN echo "deb http://deb.debian.org/debian stretch main contrib non-free" >> /etc/apt/sources.list
-RUN apt-get update && apt-get install -y zip nmap netdiscover hydra sqlmap nikto
+RUN apt-get update && apt-get install -y zip nmap netdiscover hydra sqlmap nikto dnsrecon
 
 # Setup workdir
 WORKDIR /go/src/github.com/marco-lancini/goscan
