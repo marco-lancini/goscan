@@ -112,7 +112,7 @@ func (s *EnumScan) EnumDNS() {
 				// -----------------------------------------------------------------------
 				name := "dns_nmap"
 				nmapArgs := fmt.Sprintf("-sV -Pn -sU -p53,%d", port.Number)
-				nmap := NewScan(name, s.Target.Address, "FTP", name, nmapArgs)
+				nmap := NewScan(name, s.Target.Address, "DNS", name, nmapArgs)
 				nmap.RunNmap()
 
 				// POLITE
@@ -303,7 +303,45 @@ func (s *EnumScan) EnumSMB() {
 				// Start Enumerating
 				utils.Config.Log.LogInfo(fmt.Sprintf("Starting Enumeration: %s:%d (%s)", s.Target.Address, port.Number, service.Name))
 
-				// POLITE
+				// -----------------------------------------------------------------------
+				// NMAP
+				// -----------------------------------------------------------------------
+				name := fmt.Sprintf("smb_nmap_%d", port.Number)
+				nmapArgs := fmt.Sprintf("-v -p 137,138,139,445%d --script=smb-os-discovery,smb-security-mode,smb-psexec,smb-mbenum,smb-enum-shares,smb-enum-sessions,smb-enum-processes,samba-vuln-cve-2012-1182,smb-check-vulns,nbtstat  --script-args=unsafe=1", port.Number)
+				nmap := NewScan(name, s.Target.Address, "SMB", name, nmapArgs)
+				nmap.RunNmap()
+
+				name = fmt.Sprintf("smb_nmap_enum-users_%d", port.Number)
+				nmapArgs = fmt.Sprintf("-v -p 137,138,139,445%d --script=smb-enum-users -sS -A", port.Number)
+				nmap = NewScan(name, s.Target.Address, "SMB", name, nmapArgs)
+				nmap.RunNmap()
+
+				name = fmt.Sprintf("smb_nmap_nbtstat_%d", port.Number)
+				nmapArgs = fmt.Sprintf("-v -p 137,138,139,445%d -sU --script nbstat.nse", port.Number)
+				nmap = NewScan(name, s.Target.Address, "SMB", name, nmapArgs)
+				nmap.RunNmap()
+			
+				// -----------------------------------------------------------------------
+				// ENUM4LINUX
+				// -----------------------------------------------------------------------
+				output := s.makeOutputPath("SMB", "enum4linux")
+				cmd := fmt.Sprintf("enum4linux -a %s > %s", s.Target.Address, output)
+				s.runCmd(cmd)
+
+				// -----------------------------------------------------------------------
+				// NBTSCAN
+				// -----------------------------------------------------------------------
+				output = s.makeOutputPath("SMB", "nbtscan")
+				cmd = fmt.Sprintf("nbtscan -r %s > %s", s.Target.Address, output)
+				s.runCmd(cmd)
+
+				// -----------------------------------------------------------------------
+				// SAMRDUMP
+				// -----------------------------------------------------------------------
+				output = s.makeOutputPath("SMB", "samrdump")
+				cmd = fmt.Sprintf("python /usr/local/bin/samrdump.py %s 445/SMB > %s", s.Target.Address, output)
+				s.runCmd(cmd)
+
 			}
 		}
 	}
@@ -365,7 +403,47 @@ func (s *EnumScan) EnumSNMP() {
 				cmd := fmt.Sprintf("snmpcheck %s > %s", s.Target.Address, output)
 				s.runCmd(cmd)
 
-				// POLITE
+				// -----------------------------------------------------------------------
+				// ONESIXTYONE
+				// -----------------------------------------------------------------------
+				output = s.makeOutputPath("SNMP", "snmp_onesixtyone")
+				cmd = fmt.Sprintf("onesixtyone -c %s %s > %s", utils.WORDLIST_SNMP, s.Target.Address, output)
+				s.runCmd(cmd)
+
+				// -----------------------------------------------------------------------
+				// SNMPWALK
+				// -----------------------------------------------------------------------
+				output = s.makeOutputPath("SNMP", "snmp_snmpwalk_1")
+				cmd = fmt.Sprintf("snmpwalk -c public -v1 %s 1 > %s", s.Target.Address, output)
+				s.runCmd(cmd)
+
+				output = s.makeOutputPath("SNMP", "snmp_snmpwalk_system-processes")
+				cmd = fmt.Sprintf("snmpwalk -c public -v1 %s 1.3.6.1.2.1.25.1.6.0 > %s", s.Target.Address, output)
+				s.runCmd(cmd)
+
+				output = s.makeOutputPath("SNMP", "snmp_snmpwalk_running-programs")
+				cmd = fmt.Sprintf("snmpwalk -c public -v1 %s 1.3.6.1.2.1.25.4.2.1.2 > %s", s.Target.Address, output)
+				s.runCmd(cmd)
+
+				output = s.makeOutputPath("SNMP", "snmp_snmpwalk_processes-path")
+				cmd = fmt.Sprintf("snmpwalk -c public -v1 %s 1.3.6.1.2.1.25.4.2.1.4 > %s", s.Target.Address, output)
+				s.runCmd(cmd)
+
+				output = s.makeOutputPath("SNMP", "snmp_snmpwalk_storage-units")
+				cmd = fmt.Sprintf("snmpwalk -c public -v1 %s 1.3.6.1.2.1.25.2.3.1.4 > %s", s.Target.Address, output)
+				s.runCmd(cmd)
+
+				output = s.makeOutputPath("SNMP", "snmp_snmpwalk_installed-software")
+				cmd = fmt.Sprintf("snmpwalk -c public -v1 %s 1.3.6.1.2.1.25.6.3.1.2 > %s", s.Target.Address, output)
+				s.runCmd(cmd)
+
+				output = s.makeOutputPath("SNMP", "snmp_snmpwalk_user-accounts")
+				cmd = fmt.Sprintf("snmpwalk -c public -v1 %s 1.3.6.1.4.1.77.1.2.25 > %s", s.Target.Address, output)
+				s.runCmd(cmd)
+
+				output = s.makeOutputPath("SNMP", "snmp_snmpwalk_open-tcp-ports")
+				cmd = fmt.Sprintf("snmpwalk -c public -v1 %s 1.3.6.1.2.1.6.13.1.3 > %s", s.Target.Address, output)
+				s.runCmd(cmd)
 			}
 		}
 	}
