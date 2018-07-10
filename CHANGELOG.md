@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
-## [1.4] - 2018-07-10
+## [1.5] - 2018-07-10
 #### Added
 - DNS enumeration
 - SMB enumeration
