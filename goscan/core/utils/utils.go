@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/marco-lancini/goscan/core/model"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -33,6 +34,7 @@ var WORDLIST_FINGER_USER = WORDLIST_FUZZ_NAMELIST
 var WORDLIST_FTP_USER = WORDLIST_FUZZ_NAMELIST
 var WORDLIST_SMTP = WORDLIST_FUZZ_NAMELIST
 var WORDLIST_SNMP = "/usr/share/doc/onesixtyone/dict.txt"
+var WORDLIST_DNS_BRUTEFORCE = WORDLIST_FUZZ_NAMELIST
 var WORDLIST_HYDRA_SSH_USER = WORDLIST_FUZZ_NAMELIST
 var WORDLIST_HYDRA_SSH_PWD = WORDLIST_MSF_PWDS
 var WORDLIST_HYDRA_FTP_USER = WORDLIST_FUZZ_NAMELIST
@@ -85,6 +87,23 @@ func ParseNextArg(args []string) (string, []string) {
 		return args[0], make([]string, 0)
 	}
 	return args[0], args[1:]
+}
+
+func ParseAllArgs(args []string) string {
+	all_args := strings.Join(args, " ")
+	return all_args
+}
+
+func ShellCmd(cmd string) string {
+	Config.Log.LogDebug(fmt.Sprintf("Executing command: %s", cmd))
+	output, err := exec.Command("sh", "-c", cmd).Output()
+
+	if err != nil {
+		Config.Log.LogError(fmt.Sprintf("Error while executing command: %s", err.Error()))
+		return string(output)
+	}
+
+	return string(output)
 }
 
 // ---------------------------------------------------------------------------------------
