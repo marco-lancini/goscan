@@ -4,10 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
-## Unreleased
+## [1.4] - 2018-07-10
 #### Added
-#### Fixed
-#### Removed
+- DNS enumeration
+- SMB enumeration
+- SNMP enumeration
+- Windows Domain enumeration
+- Dynamic nmap switches
+- Dynamic wordlists
 
 
 ## [1.3] - 2018-06-28
@@ -25,6 +29,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.1] - 2018-05-22
 #### Fixed
 - Command Parser runtime error
+ 
  
 ## [1.0] - 2018-05-18
 #### Added
