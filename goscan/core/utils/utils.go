@@ -6,6 +6,7 @@ import (
 	"github.com/marco-lancini/goscan/core/model"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
 	"strings"
 )
@@ -24,8 +25,10 @@ var Const_UDP_PORTS = "19,53,69,79,111,123,135,137,138,161,177,445,500,514,520,1
 var Const_NMAP_SWEEP = "-n -sn -PE -PP"
 var Const_NMAP_TCP_FULL = "-Pn -sT -sC -A -T4 -p-"
 var Const_NMAP_TCP_STANDARD = "-Pn -sS -A -T4 --top-ports 200"
+var Const_NMAP_TCP_PROD = "-Pn -sT -sV -T3 -p-"
 var Const_NMAP_TCP_VULN = "-Pn -sT -sV -p- --script=vulscan/vulscan.nse"
 var Const_NMAP_UDP_STANDARD = fmt.Sprintf("-Pn -sU -sC -A -T4 -p%s", Const_UDP_PORTS)
+var Const_NMAP_UDP_PROD = fmt.Sprintf("-Pn -sU -sC -sV -T3 -p%s", Const_UDP_PORTS)
 
 // WORDLISTS
 var WORDLIST_FUZZ_NAMELIST = "/usr/share/wfuzz/wordlist/fuzzdb/wordlists-user-passwd/names/namelist.txt"
@@ -45,22 +48,35 @@ var WORDLIST_HYDRA_FTP_PWD = WORDLIST_MSF_PWDS
 // ---------------------------------------------------------------------------------------
 type config struct {
 	Outfolder string
-	Target    string
 	Log       *Logger
 	DB        *gorm.DB
+	DBPath    string
 }
 
 // Initialize global config (db, logger, etc.)
 // From now on it will be accessible as utils.Config
 func InitConfig() {
 	Config = config{}
+	
 	// Initialize logger
 	Config.Log = InitLogger()
-	// Setup Outfolder
-	Config.Outfolder = filepath.Join(os.Getenv("OUT_FOLDER"), "goscan")
+
+	// Create output folder
+	if os.Getenv("OUT_FOLDER") != "" {
+		Config.Outfolder = filepath.Join(os.Getenv("OUT_FOLDER"), "goscan")
+	} else {
+		usr, _ := user.Current()
+		Config.Outfolder = filepath.Join(usr.HomeDir, ".goscan")
+	}
 	EnsureDir(Config.Outfolder)
+
 	// Init DB
-	Config.DB = model.InitDB()
+	if os.Getenv("DB_PATH") != "" {
+		Config.DBPath = os.Getenv("DB_PATH")
+	} else {
+		Config.DBPath = filepath.Join(Config.Outfolder, "goscan.db")
+	}
+	Config.DB = model.InitDB(Config.DBPath)
 	Config.Log.LogDebug("Connected to DB")
 }
 
@@ -89,9 +105,9 @@ func ParseNextArg(args []string) (string, []string) {
 	return args[0], args[1:]
 }
 
+// Parse all remaining arguments from command line
 func ParseAllArgs(args []string) string {
-	all_args := strings.Join(args, " ")
-	return all_args
+	return strings.Join(args, " ")
 }
 
 func ShellCmd(cmd string) string {
@@ -132,7 +148,7 @@ func CleanPath(s string) string {
 
 }
 
-// Given a path and a list of strings, it writes them to file
+// Given a path and a list of strings, writes them to file
 func WriteArrayToFile(path string, s []string) {
 	Config.Log.LogDebug(fmt.Sprintf("Writing output to file: %s", path))
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0755)
@@ -147,5 +163,4 @@ func WriteArrayToFile(path string, s []string) {
 			Config.Log.LogError(fmt.Sprintf("Error while writing to file: %s", err))
 		}
 	}
-
 }
