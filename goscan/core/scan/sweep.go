@@ -31,7 +31,7 @@ func execSweep(name, target, folder, file, nmapArgs string) {
 		//   - or if target is TO_ANALYZE and host still need to be analyzed
 		//   - or if host is the selected one
 		if target == "ALL" || 
-		   (target == "TO_ANALYZE" && h.Step == "imported") || 
+		   (target == "TO_ANALYZE" && h.Step == model.IMPORTED) || 
 		   target == h.Address {
 			temp := h
 			file = fmt.Sprintf("%s_%s", file, h.Address)
@@ -60,14 +60,14 @@ func workerSweep(name string, h *model.Target, folder string, file string, nmapA
 			if status == "up" {
 				// Save as host
 				addr := host.Addresses[0].Addr
-				model.AddHost(utils.Config.DB, addr, "up", "new")
+				model.AddHost(utils.Config.DB, addr, "up", model.NEW)
 			}
 		}
 	}
 
 	// Update status of target
 	model.Mutex.Lock()
-	h.Step = "sweeped"
+	h.Step = model.SWEEPED
 	utils.Config.DB.Save(&h)
 	model.Mutex.Unlock()
 
