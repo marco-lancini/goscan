@@ -110,16 +110,16 @@ func ParseAllArgs(args []string) string {
 	return strings.Join(args, " ")
 }
 
-func ShellCmd(cmd string) string {
+func ShellCmd(cmd string) (string, error) {
 	Config.Log.LogDebug(fmt.Sprintf("Executing command: %s", cmd))
 	output, err := exec.Command("sh", "-c", cmd).Output()
 
 	if err != nil {
 		Config.Log.LogError(fmt.Sprintf("Error while executing command: %s", err.Error()))
-		return string(output)
+		return string(output), err
 	}
 
-	return string(output)
+	return string(output), err
 }
 
 // ---------------------------------------------------------------------------------------
