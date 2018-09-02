@@ -125,10 +125,10 @@ func cmdLoad(args []string) bool {
 		switch kind {
 		case "target":
 			utils.Config.Log.LogInfo(fmt.Sprintf("Imported target: %s", target))
-			model.AddTarget(utils.Config.DB, target, "imported")
+			model.AddTarget(utils.Config.DB, target, model.IMPORTED)
 		case "alive":
 			utils.Config.Log.LogInfo(fmt.Sprintf("Imported alive host: %s", target))
-			model.AddHost(utils.Config.DB, target, "up", "new")
+			model.AddHost(utils.Config.DB, target, "up", model.NEW)
 		}
 	case "MULTI":
 		// If it's a folder, iterate through all the files contained in there
@@ -173,9 +173,9 @@ func loadFile(kind string, src string) {
 		utils.Config.Log.LogInfo(fmt.Sprintf("Importing: %s", addr))
 		switch kind {
 		case "target":
-			model.AddTarget(utils.Config.DB, target, "imported")
+			model.AddTarget(utils.Config.DB, target, model.IMPORTED)
 		case "alive":
-			model.AddHost(utils.Config.DB, target, "up", "new")
+			model.AddHost(utils.Config.DB, target, "up", model.NEW)
 		}
 	}
 	// Error while reading the file
@@ -225,7 +225,7 @@ func loadNmapXML(fname string) {
 			h := model.GetHostByAddress(utils.Config.DB, record.Addresses[0].Addr)
 			if h == nil || h.Address == "" {
 				// If host doesn't exist yet (because we are importing from XML), create a record
-				h = model.AddHost(utils.Config.DB, record.Addresses[0].Addr, record.Status.State, "new")
+				h = model.AddHost(utils.Config.DB, record.Addresses[0].Addr, record.Status.State, model.NEW)
 			}
 			// Extract info and assign to host
 			scan.ProcessResults(h, record)

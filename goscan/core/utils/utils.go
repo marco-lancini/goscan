@@ -20,6 +20,7 @@ var Const_notification_delay_unit = 10
 var Const_example_target_cidr = "127.0.0.1/32"
 var Const_example_target_desc = "Target CIDR or /32 for single target"
 
+
 // NMAP COMMANDS
 var Const_UDP_PORTS = "19,53,69,79,111,123,135,137,138,161,177,445,500,514,520,1434,1900,5353"
 var Const_NMAP_SWEEP = "-n -sn -PE -PP"

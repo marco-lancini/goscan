@@ -373,7 +373,7 @@ func getTargetSuggestions() []prompt.Suggest {
 }
 
 func getSweepSuggestions() []prompt.Suggest {
-	toSweep := model.GetTargetByStep(utils.Config.DB, "imported")
+	toSweep := model.GetTargetByStep(utils.Config.DB, model.IMPORTED)
 	s := make([]prompt.Suggest, 2, 5)
 	s[0] = prompt.Suggest{
 		Text:        "ALL",
@@ -395,7 +395,7 @@ func getSweepSuggestions() []prompt.Suggest {
 }
 
 func getPortScanSuggestions() []prompt.Suggest {
-	toScan := model.GetHostByStep(utils.Config.DB, "new")
+	toScan := model.GetHostByStep(utils.Config.DB, model.NEW)
 	s := make([]prompt.Suggest, 2, 5)
 	s[0] = prompt.Suggest{
 		Text:        "ALL",
@@ -417,7 +417,7 @@ func getPortScanSuggestions() []prompt.Suggest {
 }
 
 func getEnumerationSuggestions() []prompt.Suggest {
-	toEnum := model.GetHostByStep(utils.Config.DB, "scanned")
+	toEnum := model.GetHostByStep(utils.Config.DB, model.SCANNED)
 	s := make([]prompt.Suggest, 1, 5)
 	s[0] = prompt.Suggest{
 		Text:        "ALL",
