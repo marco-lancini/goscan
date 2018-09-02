@@ -5,7 +5,6 @@ import (
 	"github.com/marco-lancini/goscan/core/model"
 	"github.com/marco-lancini/goscan/core/scan"
 	"github.com/marco-lancini/goscan/core/utils"
-	"os/exec"
 	"path/filepath"
 	"time"
 )
@@ -14,9 +13,7 @@ import (
 // ENUMSCAN
 // ---------------------------------------------------------------------------------------
 var notificationDelay time.Duration = time.Duration(utils.Const_notification_delay_unit) * time.Second
-
 type EnumScan model.Enumeration
-
 var EnumList = []*EnumScan{}
 
 func NewEnumScan(target *model.Host, kind, polite string) *EnumScan {
@@ -44,17 +41,15 @@ func (s *EnumScan) makeOutputPath(folder, file string) string {
 	return resFile
 }
 
-func (s *EnumScan) runCmd(cmd string) ([]byte, error) {
+func (s *EnumScan) runCmd(cmd string) (string, error) {
 	// If it's a dry run, only show the command
 	if s.Polite == "DRY" {
 		utils.Config.Log.LogDebug(fmt.Sprintf("[DRY RUN] %s", cmd))
-		return nil, nil
+		return "", nil
 	}
 	// Otherwise execute the command
-	utils.Config.Log.LogDebug(fmt.Sprintf("Running: %s", cmd))
-	res, err := exec.Command("sh", "-c", cmd).Output()
+	res, err := utils.ShellCmd(cmd)
 	if err != nil {
-		utils.Config.Log.LogError(fmt.Sprintf("Failed Enumeration: %s", err))
 		s.Status = model.FAILED
 	}
 	return res, err
