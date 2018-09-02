@@ -4,6 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [2.0] - 2018-09-02
+#### Added
+- Complete refactoring of the core, new syntax, new commands
+- Multi-step processing: detached processes for unstable environments, state saved in SQLite
+- Port scan: new TCP and UDP PROD scans
+- Improved enumeration
+- Dry-runs for enumeration
+- EyeWitness integration (for HTTP, RDP, VNC)
+- Improved documentation
+#### Removed
+- Historical Tracking
+
+
 ## [1.5] - 2018-07-10
 #### Added
 - DNS enumeration

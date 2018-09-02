@@ -11,6 +11,7 @@ TO_UPDATE=(
     goscan/Makefile
 )
 
+read -p "[?] Did you remember to update the inbuilt help? "
 read -p "[?] Did you remember to update CHANGELOG.md? "
 read -p "[?] Did you remember to update README.md with new features/changes? "
 
