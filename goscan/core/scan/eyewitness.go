@@ -2,13 +2,9 @@ package scan
 
 import (
 	"fmt"
-	// "bufio"
-	// "fmt"
 	"github.com/marco-lancini/goscan/core/utils"
 	"github.com/marco-lancini/goscan/core/model"
-	// "os"
 	"path/filepath"
-	// "strings"
 )
 
 // ---------------------------------------------------------------------------------------
