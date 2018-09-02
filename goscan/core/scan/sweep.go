@@ -28,8 +28,11 @@ func execSweep(name, target, folder, file, nmapArgs string) {
 	for _, h := range targets {
 		// Scan only if:
 		//   - target is ALL
+		//   - or if target is TO_ANALYZE and host still need to be analyzed
 		//   - or if host is the selected one
-		if target == "ALL" || target == h.Address {
+		if target == "ALL" || 
+		   (target == "TO_ANALYZE" && h.Step == "imported") || 
+		   target == h.Address {
 			temp := h
 			file = fmt.Sprintf("%s_%s", file, h.Address)
 			go workerSweep(name, &temp, folder, file, nmapArgs)

@@ -374,10 +374,14 @@ func getTargetSuggestions() []prompt.Suggest {
 
 func getSweepSuggestions() []prompt.Suggest {
 	toSweep := model.GetTargetByStep(utils.Config.DB, "imported")
-	s := make([]prompt.Suggest, 1, 5)
+	s := make([]prompt.Suggest, 2, 5)
 	s[0] = prompt.Suggest{
 		Text:        "ALL",
 		Description: "Sweep all targets (even those already sweeped)",
+	}
+	s[1] = prompt.Suggest{
+		Text:		"TO_ANALYZE",
+		Description: "Sweep only targets that haven't been sweeped yet",
 	}
 
 	for _, t := range toSweep {
@@ -392,16 +396,20 @@ func getSweepSuggestions() []prompt.Suggest {
 
 func getPortScanSuggestions() []prompt.Suggest {
 	toScan := model.GetHostByStep(utils.Config.DB, "new")
-	s := make([]prompt.Suggest, 1, 5)
+	s := make([]prompt.Suggest, 2, 5)
 	s[0] = prompt.Suggest{
 		Text:        "ALL",
 		Description: "Portscan all targets (even those already scanned)",
+	}
+	s[1] = prompt.Suggest{
+		Text:		"TO_ANALYZE",
+		Description: "Scan only targets that haven't been scanned yet",
 	}
 
 	for _, t := range toScan {
 		s = append(s, prompt.Suggest{
 			Text:        t.Address,
-			Description: fmt.Sprintf("Sweep: %s", t.Address),
+			Description: fmt.Sprintf("Portscan: %s", t.Address),
 		})
 	}
 
@@ -413,7 +421,7 @@ func getEnumerationSuggestions() []prompt.Suggest {
 	s := make([]prompt.Suggest, 1, 5)
 	s[0] = prompt.Suggest{
 		Text:        "ALL",
-		Description: "Enumerate all targets (even those not already scanned)",
+		Description: "Enumerate all targets",
 	}
 
 	for _, t := range toEnum {
