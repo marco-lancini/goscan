@@ -1,12 +1,13 @@
 # GoScan
 
+**GoScan** is an interactive network scanner client, featuring auto-completion, which provides abstraction and automation over nmap.
 
-**GoScan** is a project I developed in order to learn [@golang](https://twitter.com/golang). It is an interactive network scanner client, featuring auto-complete, which provides abstraction and automation over nmap.
+Although it started as a small side-project I developed in order to learn [@golang](https://twitter.com/golang), GoScan can now be used to perform host discovery, port scanning, and service enumeration not only in situations where being stealthy is not a priority and time is limited (think at CTFs, OSCP, exams, etc.), but also (with a few tweaks in its configuration) during professional engagements.
 
-It can be used to perform host discovery, port scanning, and service enumeration in situations where being stealthy is not a priority, and time is limited (think at CTFs, OSCP, exams, etc.).
+GoScan is also particularly suited for unstable environments (think unreliable network connectivity, lack of "`screen`", etc.), given that it fires scans and maintain their state in an SQLite database. Scans runs in the background (detached from the main thread), so even if connection to the box running GoScan is lost, results can be uploaded from one of the `load` commands (more on this below). That is, data can be imported into GoScan at different stages of the process, without the need to restart the entire process from scratch if something goes wrong.
+
 
 ![demo](https://raw.githubusercontent.com/marco-lancini/goscan/master/.github/demo.gif)
-
 
 
 
@@ -56,48 +57,48 @@ $ docker-compose up --build
 
 
 
-
 # Usage
 
 GoScan supports all the main steps of network enumeration:
 
-1. Host Discovery (ARP + ping sweep): `sweep <TYPE> <TARGET>`
-2. Port Scanning: `portscan <TYPE> <TARGET>`
-3. Service Enumeration: `enumerate <TYPE> <POLITE/AGGRESSIVE> <TARGET>`
-
-Plus some more:
-
-4. DNS enumeration: `dns <DISCOVERY/BRUTEFORCE/BRUTEFORCE_REVERSE> <DOMAIN> [<BASE_IP>]`
-5. Domain enumeration (Extract windows domain information from enumeration data): `domain <users/hosts/servers>`
+![process](https://raw.githubusercontent.com/marco-lancini/goscan/master/.github/goscan_process.png)
 
 
-In addition, it has a few supporting commands:
+1. **Load targets**
+    * Add a single target via the CLI (must be a /32): `load target SINGLE <IP>`
+    * Upload multiple targets from a text file or folder: `load target MULTI <path-to-file>`
+2. **Host Discovery**
+    * Perform a Ping Sweep: `sweep <TYPE> <TARGET>`
+    * OR load results from a previous discovery:
+        - Add a single alive host via the CLI (must be a /32): `load alive SINGLE <IP>`
+        - Upload multiple alive hosts from a text file or folder: `load alive MULTI <path-to-file>`
+3. **Port Scanning**
+    * Perform a port scan: `portscan <TYPE> <TARGET>`
+    * OR upload nmap results from XML files or folder: `load portscan <path-to-file>`
+4. **Service Enumeration**
+    * Dry Run (only show commands, without performing them): `enumerate <TYPE> DRY <TARGET>`
+    * Perform enumeration of detected services: `enumerate <TYPE> <POLITE/AGGRESSIVE> <TARGET>`
 
-- Change the output folder (by default `~/goscan`): `set_output_folder <PATH>`
-- Modify the default nmap switches: `set_nmap_switches <SWEEP/TCP_FULL/TCP_STANDARD/TCP_VULN/UDP_STANDARD>`
-- Modify the default wordlists: `set_wordlists <FINGER_USER/FTP_USER/...>`
-- Show live hosts: `show hosts`
-- Show detailed ports information: `show ports`
-- Reset the database: `db reset`
+5. **Special Scans**
+   	* *EyeWitness*
+        - Take screenshots of websites, RDP services, and open VNC servers (KALI ONLY): `special eyewitness`
+        - `EyeWitness.py` needs to be in the system path
+	* *Extract (Windows) domain information from enumeration data*
+		- `special domain <users/hosts/servers>`
+	* *DNS*
+		- Enumerate DNS (nmap, dnsrecon, dnsenum): `special dns DISCOVERY <domain>`
+		- Bruteforce DNS: `special dns BRUTEFORCE <domain>`
+		- Reverse Bruteforce DNS: `special dns BRUTEFORCE_REVERSE <domain> <base_IP>`
 
 
 
-## Full Command List
+In addition, it has a few utils:
+* Show results: `show <targets/hosts/ports`
+* Change the output folder (by default `~/goscan`): `set output_folder <PATH>`
+* Modify the default nmap switches: `set nmap_switches <SWEEP/TCP_FULL/TCP_STANDARD/TCP_VULN/UDP_STANDARD> <SWITCHES>`
+* Modify the default wordlists: `set_wordlists <FINGER_USER/FTP_USER/...> <PATH>`
 
-| COMMAND |  SYNTAX  |
-| ------- | -------- |
-| Set output folder                    | `set_output_folder <PATH>` |
-| Modify the default nmap switches     | `set_nmap_switches <SWEEP/TCP_FULL/TCP_STANDARD/TCP_VULN/UDP_STANDARD>` |
-| Modify the default wordlists         | `set_wordlists <FINGER_USER/FTP_USER/...>` |
-| Ping Sweep                           | `sweep <TYPE> <TARGET>` |
-| Port Scan                            | `portscan <TYPE> <TARGET>` |
-| Service Enumeration                  | `enumerate <TYPE> <POLITE/AGGRESSIVE> <TARGET>` |
-| DNS Enumeration                      | `dns <DISCOVERY/BRUTEFORCE/BRUTEFORCE_REVERSE> <DOMAIN> [<BASE_IP>]` |
-| Extract (windows) domain information from enumeration data | `domain <users/hosts/servers>` |
-| Show live hosts                      | `show hosts` |
-| Show detailed ports information      | `show ports` |
-| Manage DB                            | `db <reset>` |
-| Exit this program                    | `exit` |
+
 
 
 
@@ -107,17 +108,19 @@ The _Service Enumeration_ phase currently supports the following integrations:
 
 | WHAT | INTEGRATION |
 | ---- | ----------- |
-| ARP  | <ul><li>nmap</li><li>netdiscover</li></ul> |
+| ARP  | <ul><li>nmap</li></ul> |
 | DNS  | <ul><li>nmap</li><li>dnsrecon</li><li>dnsenum</li><li>host</li></ul> |
 | FINGER  | <ul><li>nmap</li><li>finger-user-enum</li></ul> |
-| FTP  | <ul><li>nmap</li><li>ftp-user-enum</li><li>hydra</li></ul> |
-| HTTP | <ul><li>nmap</li><li>nikto</li><li>dirb</li><li>sqlmap</li><li>fimap</li></ul> |
+| FTP  | <ul><li>nmap</li><li>ftp-user-enum</li><li>hydra [AGGRESSIVE]</li></ul> |
+| HTTP | <ul><li>nmap</li><li>nikto</li><li>dirb</li><li>sqlmap [AGGRESSIVE]</li><li>fimap [AGGRESSIVE]</li></ul> |
 | RDP  | <ul><li>nmap</li></ul> |
 | SMB  | <ul><li>nmap</li><li>enum4linux</li><li>nbtscan</li><li>samrdump</li></ul> |
 | SMTP | <ul><li>nmap</li><li>smtp-user-enum</li></ul> |
 | SNMP | <ul><li>nmap</li><li>snmpcheck</li><li>onesixtyone</li><li>snmpwalk</li></ul> |
-| SSH  | <ul><li>hydra</li></ul> |
+| SSH  | <ul><li>hydra [AGGRESSIVE]</li></ul> |
 | SQL  | <ul><li>nmap</li></ul> |
+
+
 
 
 # License
