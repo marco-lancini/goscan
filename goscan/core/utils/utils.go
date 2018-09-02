@@ -113,12 +113,10 @@ func ParseAllArgs(args []string) string {
 func ShellCmd(cmd string) (string, error) {
 	Config.Log.LogDebug(fmt.Sprintf("Executing command: %s", cmd))
 	output, err := exec.Command("sh", "-c", cmd).Output()
-
 	if err != nil {
 		Config.Log.LogError(fmt.Sprintf("Error while executing command: %s", err.Error()))
 		return string(output), err
 	}
-
 	return string(output), err
 }
 
@@ -145,7 +143,6 @@ func EnsureDir(dir string) {
 // Replace slashes with underscores, when the string is used in a path
 func CleanPath(s string) string {
 	return strings.Replace(s, "/", "_", -1)
-
 }
 
 // Given a path and a list of strings, writes them to file

@@ -68,5 +68,5 @@ func workerSweep(name string, h *model.Target, folder string, file string, nmapA
 	utils.Config.DB.Save(&h)
 	model.Mutex.Unlock()
 
-	utils.Config.Log.LogInfo("Ping sweep completed!")
+	// utils.Config.Log.LogInfo("Ping sweep completed!")
 }

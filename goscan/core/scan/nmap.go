@@ -25,7 +25,7 @@ func NewScan(name, target, folder, file, nmapArgs string) *NmapScan {
 	}
 	// Construct output path and create if it doesn't exist
 	s.Outfolder = filepath.Join(utils.Config.Outfolder, utils.CleanPath(target), folder)
-	s.Outfile = filepath.Join(s.Outfolder, file)
+	s.Outfile = filepath.Join(s.Outfolder, utils.CleanPath(file))
 	utils.EnsureDir(s.Outfolder)
 	// Construct command
 	s.Cmd = s.constructCmd(nmapArgs)
