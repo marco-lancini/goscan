@@ -2,6 +2,21 @@ package model
 
 import (
 	"fmt"
+	"sync"
+)
+
+// ---------------------------------------------------------------------------------------
+// CONSTANTS
+// ---------------------------------------------------------------------------------------
+var Mutex sync.Mutex
+
+const (
+	NULL = iota
+	NOT_STARTED
+	IN_PROGRESS
+	FAILED
+	DONE
+	FINISHED
 )
 
 // ---------------------------------------------------------------------------------------
@@ -14,7 +29,6 @@ type Scan struct {
 	Outfolder string
 	Outfile   string
 	Cmd       string
-	Result    []byte
 }
 
 func (s *Scan) String() string {
