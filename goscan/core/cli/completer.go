@@ -41,8 +41,7 @@ var commands = []prompt.Suggest{
 	{Text: "sweep", Description: "Perform a Ping Sweep to discover alive hosts."},
 	{Text: "portscan", Description: "Perform a port scan."},
 	{Text: "enumerate", Description: "Perform enumeration of detected services."},
-	{Text: "domain", Description: "Extract (windows) domain information from enumeration data."},
-	{Text: "dns", Description: "Perform DNS enumeration."},
+	{Text: "special", Description: "Special scans (EyeWitness, Domain Info, DNS)."},
 	{Text: "show", Description: "Show results (hosts/ports/etc/)."},
 	{Text: "set", Description: "Set different constants (output folder, nmap switches, wordlists)."},
 	{Text: "help", Description: "Show help"},
@@ -307,39 +306,55 @@ func argumentsCompleter(d prompt.Document, args []string) []prompt.Suggest {
 	// -----------------------------------------------------------------------------------
 	// SPECIAL SCANS
 	// -----------------------------------------------------------------------------------
-	case "domain":
+	case "special":
 		if len(args) == 2 {
 			subcommands := []prompt.Suggest{
-				{Text: "users", Description: "Extract users from enumeration data"},
-				{Text: "hosts", Description: "Extract hosts from enumeration data"},
-				{Text: "servers", Description: "Extract servers from enumeration data"},
-			}
-			return prompt.FilterHasPrefix(subcommands, args[1], true)
-		}
-	case "dns":
-		if len(args) == 2 {
-			subcommands := []prompt.Suggest{
-				{Text: "DISCOVERY", Description: "Enumerate DNS (nmap, dnsrecon, dnsenum)"},
-				{Text: "BRUTEFORCE", Description: "Bruteforce DNS"},
-				{Text: "BRUTEFORCE_REVERSE", Description: "Reverse Bruteforce DNS"},
+				{Text: "eyewitness", Description: "Take screenshots of websites, RDP services, and open VNC servers (KALI ONLY)"},
+				{Text: "domain", Description: "Extract (windows) domain information from enumeration data"},
+				{Text: "dns", Description: "Perform DNS enumeration"},
 			}
 			return prompt.FilterHasPrefix(subcommands, args[1], true)
 		}
 		if len(args) == 3 {
-			subcommands := []prompt.Suggest{
-				{Text: "domain.com", Description: "Target domain"},
+			switch args[1] {
+				case "domain":			
+					subcommands := []prompt.Suggest{
+						{Text: "users", Description: "Extract users from enumeration data"},
+						{Text: "hosts", Description: "Extract hosts from enumeration data"},
+						{Text: "servers", Description: "Extract servers from enumeration data"},
+					}
+					return prompt.FilterHasPrefix(subcommands, args[2], true)
+				case "dns":
+					subcommands := []prompt.Suggest{
+						{Text: "DISCOVERY", Description: "Enumerate DNS (nmap, dnsrecon, dnsenum)"},
+						{Text: "BRUTEFORCE", Description: "Bruteforce DNS"},
+						{Text: "BRUTEFORCE_REVERSE", Description: "Reverse Bruteforce DNS"},
+					}
+					return prompt.FilterHasPrefix(subcommands, args[2], true)
 			}
-			return prompt.FilterHasPrefix(subcommands, args[2], true)
 		}
 		if len(args) == 4 {
 			switch args[1] {
-			case "BRUTEFORCE_REVERSE":
-				subcommands := []prompt.Suggest{
-					{Text: "10.0.0.10", Description: "Base IP"},
-				}
-				return prompt.FilterHasPrefix(subcommands, args[3], true)
+				case "dns":
+					subcommands := []prompt.Suggest{
+						{Text: "domain.com", Description: "Target domain"},
+					}
+					return prompt.FilterHasPrefix(subcommands, args[3], true)
 			}
 		}
+		if len(args) == 5 {
+			switch args[1] {
+				case "dns":
+					switch args[2] {
+						case "BRUTEFORCE_REVERSE":
+							subcommands := []prompt.Suggest{
+								{Text: "10.0.0.10", Description: "Base IP"},
+							}
+							return prompt.FilterHasPrefix(subcommands, args[4], true)
+					}
+			}
+		}
+
 	default:
 		return []prompt.Suggest{}
 	}
@@ -373,7 +388,7 @@ func getTargetSuggestions() []prompt.Suggest {
 }
 
 func getSweepSuggestions() []prompt.Suggest {
-	toSweep := model.GetTargetByStep(utils.Config.DB, model.IMPORTED)
+	toSweep := model.GetTargetByStep(utils.Config.DB, model.IMPORTED.String())
 	s := make([]prompt.Suggest, 2, 5)
 	s[0] = prompt.Suggest{
 		Text:        "ALL",
@@ -395,7 +410,7 @@ func getSweepSuggestions() []prompt.Suggest {
 }
 
 func getPortScanSuggestions() []prompt.Suggest {
-	toScan := model.GetHostByStep(utils.Config.DB, model.NEW)
+	toScan := model.GetHostByStep(utils.Config.DB, model.NEW.String())
 	s := make([]prompt.Suggest, 2, 5)
 	s[0] = prompt.Suggest{
 		Text:        "ALL",
@@ -417,7 +432,7 @@ func getPortScanSuggestions() []prompt.Suggest {
 }
 
 func getEnumerationSuggestions() []prompt.Suggest {
-	toEnum := model.GetHostByStep(utils.Config.DB, model.SCANNED)
+	toEnum := model.GetHostByStep(utils.Config.DB, model.SCANNED.String())
 	s := make([]prompt.Suggest, 1, 5)
 	s[0] = prompt.Suggest{
 		Text:        "ALL",

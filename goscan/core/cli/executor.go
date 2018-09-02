@@ -27,10 +27,8 @@ func Executor(s string) {
 		cmdPortscan(args)
 	case "enumerate":
 		cmdEnumerate(args)
-	case "domain":
-		cmdDomain(args)
-	case "dns":
-		cmdDNS(args)
+	case "special":
+		cmdSpecial(args)
 	case "show":
 		cmdShow(args)
 	case "set":
@@ -58,11 +56,11 @@ func cmdHelp() {
 	utils.Config.Log.LogInfo("Available commands:")
 
 	data := [][]string{
-		[]string{"Load target", "Add a single target via the CLI", "load target SINGLE <IP>"},
+		[]string{"Load target", "Add a single target via the CLI (must be a /32)", "load target SINGLE <IP>"},
 		[]string{"Load target", "Upload multiple targets from a text file or folder", "load target MULTI <path-to-file>"},
 
 		[]string{"Host Discovery", "Perform a Ping Sweep", "sweep <TYPE> <TARGET>"},
-		[]string{"Load Host Discovery", "Add a single alive host via the CLI", "load alive SINGLE <IP>"},
+		[]string{"Load Host Discovery", "Add a single alive host via the CLI (must be a /32)", "load alive SINGLE <IP>"},
 		[]string{"Load Host Discovery", "Upload multiple alive hosts from a text file or folder", "load alive MULTI <path-to-file>"},
 
 		[]string{"Port Scan", "Perform a port scan", "portscan <TYPE> <TARGET>"},
@@ -71,11 +69,13 @@ func cmdHelp() {
 		[]string{"Service Enumeration", "Dry Run (only show commands, without performing them", "enumerate <TYPE> DRY <TARGET>"},
 		[]string{"Service Enumeration", "Perform enumeration of detected services", "enumerate <TYPE> <POLITE/AGGRESSIVE> <TARGET>"},
 
-		[]string{"Special Scan - Domain Info", "Extract Windows domain information from enumeration data", "domain <users/hosts/servers>"},
+		[]string{"Special Scan - EyeWitness", "Take screenshots of websites, RDP services, and open VNC servers (KALI ONLY)", "special eyewitness"},
 
-		[]string{"Special Scan - DNS", "Enumerate DNS (nmap, dnsrecon, dnsenum)", "dns DISCOVERY <domain>"},
-		[]string{"Special Scan - DNS", "Bruteforce DNS", "dns BRUTEFORCE <domain>"},
-		[]string{"Special Scan - DNS", "Reverse Bruteforce DNS", "dns BRUTEFORCE_REVERSE <domain> <base_IP>"},
+		[]string{"Special Scan - Domain Info", "Extract Windows domain information from enumeration data", "special domain <users/hosts/servers>"},
+
+		[]string{"Special Scan - DNS", "Enumerate DNS (nmap, dnsrecon, dnsenum)", "special dns DISCOVERY <domain>"},
+		[]string{"Special Scan - DNS", "Bruteforce DNS", "special dns BRUTEFORCE <domain>"},
+		[]string{"Special Scan - DNS", "Reverse Bruteforce DNS", "special dns BRUTEFORCE_REVERSE <domain> <base_IP>"},
 
 		[]string{"Show", "Show targets", "show targets"},
 		[]string{"Show", "Show live hosts", "show hosts"},
@@ -125,10 +125,10 @@ func cmdLoad(args []string) bool {
 		switch kind {
 		case "target":
 			utils.Config.Log.LogInfo(fmt.Sprintf("Imported target: %s", target))
-			model.AddTarget(utils.Config.DB, target, model.IMPORTED)
+			model.AddTarget(utils.Config.DB, target, model.IMPORTED.String())
 		case "alive":
 			utils.Config.Log.LogInfo(fmt.Sprintf("Imported alive host: %s", target))
-			model.AddHost(utils.Config.DB, target, "up", model.NEW)
+			model.AddHost(utils.Config.DB, target, "up", model.NEW.String())
 		}
 	case "MULTI":
 		// If it's a folder, iterate through all the files contained in there
@@ -173,9 +173,9 @@ func loadFile(kind string, src string) {
 		utils.Config.Log.LogInfo(fmt.Sprintf("Importing: %s", addr))
 		switch kind {
 		case "target":
-			model.AddTarget(utils.Config.DB, target, model.IMPORTED)
+			model.AddTarget(utils.Config.DB, target, model.IMPORTED.String())
 		case "alive":
-			model.AddHost(utils.Config.DB, target, "up", model.NEW)
+			model.AddHost(utils.Config.DB, target, "up", model.NEW.String())
 		}
 	}
 	// Error while reading the file
@@ -225,7 +225,7 @@ func loadNmapXML(fname string) {
 			h := model.GetHostByAddress(utils.Config.DB, record.Addresses[0].Addr)
 			if h == nil || h.Address == "" {
 				// If host doesn't exist yet (because we are importing from XML), create a record
-				h = model.AddHost(utils.Config.DB, record.Addresses[0].Addr, record.Status.State, model.NEW)
+				h = model.AddHost(utils.Config.DB, record.Addresses[0].Addr, record.Status.State, model.NEW.String())
 			}
 			// Extract info and assign to host
 			scan.ProcessResults(h, record)
@@ -279,35 +279,28 @@ func cmdEnumerate(args []string) {
 // ---------------------------------------------------------------------------------------
 // SPECIAL SCANS
 // ---------------------------------------------------------------------------------------
-func cmdDomain(args []string) {
-	// Check arguments length to ensure all required options have been provided
-	if len(args) != 1 {
-		utils.Config.Log.LogError("Invalid command provided")
-		return
+func cmdSpecial(args []string) {
+	what, args := utils.ParseNextArg(args)
+	switch what {
+		case "eyewitness":
+			scan.EyeWitness()
+		case "domain":
+			kind, _ := utils.ParseNextArg(args)
+			scan.GatherDomain(kind)
+		case "dns":
+			// Get type of scan and target domain
+			kind, args := utils.ParseNextArg(args)
+			target, args := utils.ParseNextArg(args)
+			// Get base ip
+			baseIP := ""
+			if kind == "BRUTEFORCE_REVERSE" {
+				baseIP, _ = utils.ParseNextArg(args)
+			}
+			// Perform port scan
+			scan.ScanDNS(target, kind, baseIP)
 	}
-	// Get type
-	kind, _ := utils.ParseNextArg(args)
-	// Gather data
-	scan.GatherDomain(kind)
 }
 
-func cmdDNS(args []string) {
-	// Check arguments length to ensure all required options have been provided
-	if len(args) < 2 {
-		utils.Config.Log.LogError("Invalid command provided")
-		return
-	}
-	// Get type of scan and target domain
-	kind, args := utils.ParseNextArg(args)
-	target, args := utils.ParseNextArg(args)
-	// Get base ip
-	baseIP := ""
-	if kind == "BRUTEFORCE_REVERSE" {
-		baseIP, _ = utils.ParseNextArg(args)
-	}
-	// Perform port scan
-	scan.ScanDNS(target, kind, baseIP)
-}
 
 // ---------------------------------------------------------------------------------------
 // SHOW

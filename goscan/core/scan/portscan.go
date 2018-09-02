@@ -63,7 +63,7 @@ func execScan(name, target, folder, file, nmapArgs string) {
 		//   - or if target is TO_ANALYZE and host still need to be analyzed
 		//   - or if host is the selected one
 		if target == "ALL" || 
-		   (target == "TO_ANALYZE" && h.Step == model.NEW) || 
+		   (target == "TO_ANALYZE" && h.Step == model.NEW.String()) || 
 		   target == h.Address {
 			temp := h
 			file = fmt.Sprintf("%s_%s", file, h.Address)
@@ -112,7 +112,7 @@ func ProcessResults(h *model.Host, record go_nmap.Host) {
 
 		// Add Service
 		if port.Service.Name != "" {
-			model.AddService(utils.Config.DB, port.Service.Name, port.Service.Version, port.Service.Product, port.Service.OsType, np)
+			model.AddService(utils.Config.DB, port.Service.Name, port.Service.Version, port.Service.Product, port.Service.OsType, np, np.ID)
 		}
 	}
 
@@ -120,7 +120,7 @@ func ProcessResults(h *model.Host, record go_nmap.Host) {
 	// Update status of host
 	// -------------------------------------------------------------------------------
 	model.Mutex.Lock()
-	h.Step = model.SCANNED
+	h.Step = model.SCANNED.String()
 	utils.Config.DB.Save(&h)
 	model.Mutex.Unlock()
 }

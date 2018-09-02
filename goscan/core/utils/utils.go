@@ -20,7 +20,6 @@ var Const_notification_delay_unit = 10
 var Const_example_target_cidr = "127.0.0.1/32"
 var Const_example_target_desc = "Target CIDR or /32 for single target"
 
-
 // NMAP COMMANDS
 var Const_UDP_PORTS = "19,53,69,79,111,123,135,137,138,161,177,445,500,514,520,1434,1900,5353"
 var Const_NMAP_SWEEP = "-n -sn -PE -PP"
@@ -115,7 +114,9 @@ func ShellCmd(cmd string) (string, error) {
 	Config.Log.LogDebug(fmt.Sprintf("Executing command: %s", cmd))
 	output, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
-		Config.Log.LogError(fmt.Sprintf("Error while executing command: %s", err.Error()))
+		if !strings.Contains(err.Error(), "exit status 1") {
+			Config.Log.LogError(fmt.Sprintf("Error while executing command: %s", err.Error()))
+		}
 		return string(output), err
 	}
 	return string(output), err
@@ -132,13 +133,19 @@ func CheckSudo() {
 	}
 }
 
-// Ensure the directory exists, or creeates it otherwise
+// Ensure the directory exists, or creates it otherwise
 func EnsureDir(dir string) {
 	// Create a directory if doesn't exist
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		os.MkdirAll(dir, os.ModePerm)
 		Config.Log.LogDebug(fmt.Sprintf("Created directory: %s", dir))
 	}
+}
+
+// Delete the specified directory
+func RemoveDir(dir string) {
+	os.RemoveAll(dir)
+	Config.Log.LogDebug(fmt.Sprintf("Deleted directory: %s", dir))
 }
 
 // Replace slashes with underscores, when the string is used in a path
