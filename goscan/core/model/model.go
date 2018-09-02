@@ -1,7 +1,6 @@
 package model
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -14,18 +13,34 @@ var (
 	lock sync.Mutex
 )
 
+type Step int
+const (
+	NOT_DEFINED Step = iota
+	IMPORTED		// targets
+	SWEEPED			// targets
+	NEW				// hosts
+	SCANNED			// hosts
+)
+func (s Step) String() string {
+	return [...]string{"NOT_DEFINED", "IMPORTED", "SWEEPED", "NEW", "SCANNED"}[s]
+}
+
+
+
 // ---------------------------------------------------------------------------------------
 // UTILS
 // ---------------------------------------------------------------------------------------
-func InitDB() *gorm.DB {
+func InitDB(dbpath string) *gorm.DB {
 	// Create connection to DB
-	db, err := gorm.Open("sqlite3", os.Getenv("DB_PATH"))
+	db, err := gorm.Open("sqlite3", dbpath)
 	if err != nil {
 		fmt.Println(fmt.Sprintf("[DB ERROR] %s", err))
 		os.Exit(1)
 	}
 	// Disable logging
-	if os.Getenv("DEBUG") == "0" {
+	if os.Getenv("DEBUG") == "1" {
+		db.LogMode(true)
+	} else {
 		db.LogMode(false)
 	}
 	// Migrate schema
@@ -34,25 +49,58 @@ func InitDB() *gorm.DB {
 	return db
 }
 
-func ResetDB(db *gorm.DB) {
-	db.DropTable(&Service{})
-	db.DropTable(&Port{})
-	db.DropTable(&Host{})
-
-	db = InitDB()
-}
-
 func migrateDB(db *gorm.DB) {
+	db.AutoMigrate(&Target{})
 	db.AutoMigrate(&Service{})
 	db.AutoMigrate(&Port{})
 	db.AutoMigrate(&Host{})
 }
 
 // ---------------------------------------------------------------------------------------
+// TARGET
+// ---------------------------------------------------------------------------------------
+type Target struct {
+	ID      uint   `gorm:"primary_key"`
+	Address string `gorm:"unique_index:idx_target_ip"`
+	Step    string
+}
+
+// Print to string
+func (t *Target) String() string {
+	return fmt.Sprintf("%s", t.Address)
+}
+
+// Constructor
+func AddTarget(db *gorm.DB, address string, step string) *Target {
+	lock.Lock()
+	defer lock.Unlock()
+
+	t := &Target{
+		Address: address,
+		Step:    step,
+	}
+	db.Create(t)
+	return t
+}
+
+// Getters
+func GetAllTargets(db *gorm.DB) []Target {
+	targets := []Target{}
+	db.Find(&targets)
+	return targets
+}
+
+func GetTargetByStep(db *gorm.DB, step string) []Target {
+	targets := []Target{}
+	db.Where("step = ?", step).Find(&targets)
+	return targets
+}
+
+// ---------------------------------------------------------------------------------------
 // SERVICE
 // ---------------------------------------------------------------------------------------
 type Service struct {
-	gorm.Model
+	ID      uint   `gorm:"primary_key"`
 	Name    string `gorm:"unique_index:idx_service"`
 	Version string
 	Product string
@@ -71,7 +119,7 @@ func (s *Service) String() string {
 }
 
 // Constructor
-func AddService(db *gorm.DB, name, version, product, ostype string, p *Port) *Service {
+func AddService(db *gorm.DB, name, version, product, osType string, p *Port, pID uint) *Service {
 	lock.Lock()
 	defer lock.Unlock()
 
@@ -79,18 +127,33 @@ func AddService(db *gorm.DB, name, version, product, ostype string, p *Port) *Se
 		Name:    name,
 		Version: version,
 		Product: product,
-		OsType:  ostype,
+		OsType:  osType,
 		Port:    p,
+		PortID:  pID,
 	}
 	db.Create(t)
 	return t
 }
 
+// Getters
+func GetServiceByName(db *gorm.DB, name string) []Service {
+	services := []Service{}
+	db.Where("name LIKE ?", name).Find(&services)
+	return services
+}
+
+func (s *Service) GetPort(db *gorm.DB) *Port {
+	port := &Port{}
+	db.Where("id = ?", s.PortID).Find(&port)
+	return port
+}
+
+
 // ---------------------------------------------------------------------------------------
 // PORT
 // ---------------------------------------------------------------------------------------
 type Port struct {
-	gorm.Model
+	ID       uint   `gorm:"primary_key"`
 	Number   int    `gorm:"unique_index:idx_port"`
 	Protocol string `gorm:"unique_index:idx_port"`
 	Status   string `gorm:"unique_index:idx_port"`
@@ -102,11 +165,6 @@ type Port struct {
 // Print to string
 func (p *Port) String() string {
 	return fmt.Sprintf("%5d/%s %-8s", p.Number, p.Protocol, p.Status)
-}
-
-// Returns true if 2 Ports are the same
-func (p *Port) Equal(other Port) bool {
-	return (p.Number == other.Number) && (p.Protocol == other.Protocol) && (p.HostID == other.HostID)
 }
 
 // Constructor
@@ -130,30 +188,32 @@ func AddPort(db *gorm.DB, number int, protocol, status string, h *Host) (*Port, 
 	return t, duplicate
 }
 
-// Get service
+// Getters
 func (p *Port) GetService(db *gorm.DB) Service {
 	srv := Service{}
 	db.Where("port_id = ?", p.ID).Find(&srv)
 	return srv
 }
 
-// In case of duplicate, find the original port already in DB
-func (p *Port) FindOriginalPort(db *gorm.DB) *Port {
-	res := &Port{}
-	db.Where("number = ? AND protocol = ? AND status = ? AND host_id = ?", p.Number, p.Protocol, p.Status, p.HostID).Find(&res)
-	return res
+func (p *Port) GetHost(db *gorm.DB) *Host {
+	host := &Host{}
+	db.Where("id = ?", p.HostID).Find(&host)
+	return host
 }
+
+
 
 // ---------------------------------------------------------------------------------------
 // HOST
 // ---------------------------------------------------------------------------------------
 type Host struct {
-	gorm.Model
+	ID      uint   `gorm:"primary_key"`
 	Address string `gorm:"unique_index:idx_hostname_ip"`
 	Status  string
 	OS      string
 	Info    string
 	Ports   []Port
+	Step    string
 }
 
 // Print to string
@@ -161,49 +221,18 @@ func (h *Host) String() string {
 	return fmt.Sprintf("%s", h.Address)
 }
 
-// Add port to the list only if it's new
-func (h *Host) AddPort(newPort Port) {
-	existing := false
-	for _, p := range h.Ports {
-		if p.Equal(newPort) {
-			existing = true
-		}
-	}
-	if existing == false {
-		h.Ports = append(h.Ports, newPort)
-	}
-}
-
 // Constructor
-func AddHost(db *gorm.DB, address string, status string) *Host {
+func AddHost(db *gorm.DB, address string, status string, step string) *Host {
 	lock.Lock()
 	defer lock.Unlock()
 
 	t := &Host{
 		Address: address,
 		Status:  status,
+		Step:    step,
 	}
 	db.Create(t)
 	return t
-}
-
-func AddHostsBulk(db *gorm.DB, sourceFile string) {
-	file, err := os.Open(sourceFile)
-	if err != nil {
-		fmt.Println(fmt.Sprintf("Error while reading source file: %s", err))
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		addr := scanner.Text()
-		fmt.Println(addr)
-		AddHost(db, addr, "unknown")
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Println(fmt.Sprintf("Error while reading source file: %s", err))
-	}
 }
 
 // Getters
@@ -213,8 +242,14 @@ func GetAllHosts(db *gorm.DB) []Host {
 	return hosts
 }
 
-func GetHostByAddress(db *gorm.DB, address string) Host {
-	host := Host{}
+func GetHostByStep(db *gorm.DB, step string) []Host {
+	hosts := []Host{}
+	db.Where("step = ?", step).Find(&hosts)
+	return hosts
+}
+
+func GetHostByAddress(db *gorm.DB, address string) *Host {
+	host := &Host{}
 	db.Where("address = ?", address).First(&host)
 	return host
 }
@@ -222,22 +257,5 @@ func GetHostByAddress(db *gorm.DB, address string) Host {
 func (h *Host) GetPorts(db *gorm.DB) []Port {
 	ports := []Port{}
 	db.Where("host_id = ?", h.ID).Find(&ports)
-	return ports
-}
-
-func (h *Host) GetMostRecentPorts(db *gorm.DB) []Port {
-	ports := []Port{}
-	temp := []Port{}
-
-	// Find most recent scan
-	db.Order("updated_at desc").Find(&temp).Limit(1)
-	if len(temp) > 0 {
-		recent := temp[0].UpdatedAt
-		recentDayBefore := recent.AddDate(0, 0, -1)
-		// Query for ports
-		db.Where("host_id = ? AND updated_at BETWEEN ? AND ?", h.ID, recentDayBefore, recent).Find(&ports)
-	} else {
-		db.Where("host_id = ?", h.ID).Find(&ports)
-	}
 	return ports
 }

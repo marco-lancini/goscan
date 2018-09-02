@@ -14,17 +14,8 @@ func Connected() bool {
 }
 
 // ---------------------------------------------------------------------------------------
-// CIDRs
+// IP addresses
 // ---------------------------------------------------------------------------------------
-// Parse a string and returns the corresponding CIDR
-func ParseCIDR(s string) string {
-	_, ipv4Net, err := net.ParseCIDR(s)
-	if err != nil {
-		return ""
-	}
-	return ipv4Net.String()
-}
-
 // Returns all the addresses of the local network interfaces
 func ParseLocalIP() map[string]string {
 	// Returns a Map of interface:subnet
@@ -39,4 +30,34 @@ func ParseLocalIP() map[string]string {
 		}
 	}
 	return res
+}
+
+// Parse a string and returns the corresponding CIDR and error status
+func ParseCIDR(s string) (string, error) {
+	_, ipv4Net, err := net.ParseCIDR(s)
+	if err != nil {
+		return "", err
+	}
+	return ipv4Net.String(), nil
+}
+
+// Parse a string and returns the corresponding IP address, or nil
+func ParseIP(s string) string {
+	i := net.ParseIP(s)
+	return i.String()
+}
+
+// Parse a string, regardless if it is an IP or CIDR, and returns its string representation
+func ParseAddress(addr string) (string, bool) {
+	cidr, err := ParseCIDR(addr)
+	if err == nil {
+		return cidr, true
+	}
+
+	ip := ParseIP(addr)
+	if ip != "" {
+		return ip, true
+	}
+
+	return "", false
 }
