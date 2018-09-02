@@ -13,14 +13,19 @@ var (
 	lock sync.Mutex
 )
 
-
+type Step int
 const (
-	NULL = iota
+	NOT_DEFINED Step = iota
 	IMPORTED		// targets
 	SWEEPED			// targets
 	NEW				// hosts
 	SCANNED			// hosts
 )
+func (s Step) String() string {
+	return [...]string{"NOT_DEFINED", "IMPORTED", "SWEEPED", "NEW", "SCANNED"}[s]
+}
+
+
 
 // ---------------------------------------------------------------------------------------
 // UTILS
@@ -33,7 +38,9 @@ func InitDB(dbpath string) *gorm.DB {
 		os.Exit(1)
 	}
 	// Disable logging
-	if os.Getenv("DEBUG") == "0" {
+	if os.Getenv("DEBUG") == "1" {
+		db.LogMode(true)
+	} else {
 		db.LogMode(false)
 	}
 	// Migrate schema
@@ -112,7 +119,7 @@ func (s *Service) String() string {
 }
 
 // Constructor
-func AddService(db *gorm.DB, name, version, product, osType string, p *Port) *Service {
+func AddService(db *gorm.DB, name, version, product, osType string, p *Port, pID uint) *Service {
 	lock.Lock()
 	defer lock.Unlock()
 
@@ -122,10 +129,25 @@ func AddService(db *gorm.DB, name, version, product, osType string, p *Port) *Se
 		Product: product,
 		OsType:  osType,
 		Port:    p,
+		PortID:  pID,
 	}
 	db.Create(t)
 	return t
 }
+
+// Getters
+func GetServiceByName(db *gorm.DB, name string) []Service {
+	services := []Service{}
+	db.Where("name LIKE ?", name).Find(&services)
+	return services
+}
+
+func (s *Service) GetPort(db *gorm.DB) *Port {
+	port := &Port{}
+	db.Where("id = ?", s.PortID).Find(&port)
+	return port
+}
+
 
 // ---------------------------------------------------------------------------------------
 // PORT
@@ -166,12 +188,20 @@ func AddPort(db *gorm.DB, number int, protocol, status string, h *Host) (*Port, 
 	return t, duplicate
 }
 
-// Get service
+// Getters
 func (p *Port) GetService(db *gorm.DB) Service {
 	srv := Service{}
 	db.Where("port_id = ?", p.ID).Find(&srv)
 	return srv
 }
+
+func (p *Port) GetHost(db *gorm.DB) *Host {
+	host := &Host{}
+	db.Where("id = ?", p.HostID).Find(&host)
+	return host
+}
+
+
 
 // ---------------------------------------------------------------------------------------
 // HOST
