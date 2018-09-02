@@ -4,73 +4,69 @@ import (
 	"fmt"
 	"github.com/marco-lancini/goscan/core/model"
 	"github.com/marco-lancini/goscan/core/utils"
-	"os/exec"
-	"path/filepath"
-	"strings"
 )
 
 // ---------------------------------------------------------------------------------------
 // DISPATCHER
 // ---------------------------------------------------------------------------------------
-func ScanSweep(target string, kind string) {
+func ScanSweep(kind string, target string) {
 	// Dispatch scan
 	switch kind {
 	case "PING":
-		pingSweep(target)
-	case "ARP":
-		arpScan(target)
-	case "ALL":
-		arpScan(target)
-		pingSweep(target)
+		utils.Config.Log.LogInfo("Starting Ping Sweep")
+		folder, file, nmapArgs := "sweep", "ping", utils.Const_NMAP_SWEEP
+		execSweep(file, target, folder, file, nmapArgs)
+
 	default:
 		utils.Config.Log.LogError("Invalid type of scan")
 		return
 	}
 }
 
+func execSweep(name, target, folder, file, nmapArgs string) {
+	targets := model.GetAllTargets(utils.Config.DB)
+	for _, h := range targets {
+		// Scan only if:
+		//   - target is ALL
+		//   - or if host is the selected one
+		if target == "ALL" || target == h.Address {
+			temp := h
+			file = fmt.Sprintf("%s_%s", file, h.Address)
+			go workerSweep(name, &temp, folder, file, nmapArgs)
+		}
+	}
+}
+
 // ---------------------------------------------------------------------------------------
-// SCANS
+// WORKER
 // ---------------------------------------------------------------------------------------
-func pingSweep(target string) {
-	// Create a new Scan and run it
-	utils.Config.Log.LogInfo("Starting ping sweep...")
-	name, folder, file, nmapArgs := "pingsweep", "sweep", "ping", utils.Const_NMAP_SWEEP
-	s := NewScan(name, target, folder, file, nmapArgs)
+func workerSweep(name string, h *model.Target, folder string, file string, nmapArgs string) {
+	// Instantiate new NmapScan
+	s := NewScan(name, h.Address, folder, file, nmapArgs)
+	ScansList = append(ScansList, s)
+
+	// Run the scan
 	s.RunNmap()
 
 	// Parse nmap's output
 	res := s.ParseOutput()
-
-	// Identify live hosts
-	for _, host := range res.Hosts {
-		status := host.Status.State
-		if status == "up" {
-			addr := host.Addresses[0].Addr
-			model.AddHost(utils.Config.DB, addr, "up")
+	if res != nil {
+		// Identify live hosts
+		for _, host := range res.Hosts {
+			status := host.Status.State
+			if status == "up" {
+				// Save as host
+				addr := host.Addresses[0].Addr
+				model.AddHost(utils.Config.DB, addr, "up", "new")
+			}
 		}
 	}
+
+	// Update status of target
+	model.Mutex.Lock()
+	h.Step = "sweeped"
+	utils.Config.DB.Save(&h)
+	model.Mutex.Unlock()
+
 	utils.Config.Log.LogInfo("Ping sweep completed!")
-}
-
-func arpScan(target string) {
-	// Directly run netdiscover
-	utils.Config.Log.LogInfo("Starting ARP scan...")
-	outfile := filepath.Join(utils.Config.Outfolder, utils.CleanPath(target), "sweep/netdiscover")
-	cmd := fmt.Sprintf("netdiscover -r %s -P > %s && cat %s | grep -E '[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}' | cut -d ' ' -f 2 | sort -u > %s", target, outfile, outfile, outfile)
-
-	// Execute the command
-	utils.Config.Log.LogDebug(fmt.Sprintf("Netdiscover command: %s", cmd))
-	out, err := exec.Command("sh", "-c", cmd).Output()
-	if err != nil {
-		utils.Config.Log.LogError("Failed to run netdiscover")
-		return
-	}
-
-	// Identify live hosts
-	for _, line := range strings.Split(strings.TrimSuffix(string(out[:]), "\n"), "\n") {
-		if line != "" {
-			model.AddHost(utils.Config.DB, line, "up")
-		}
-	}
-	utils.Config.Log.LogInfo("ARP scan completed!")
 }

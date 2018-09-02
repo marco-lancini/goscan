@@ -83,7 +83,7 @@ func DNSBruteforce(target string) {
 		name := strings.TrimSpace(scanner.Text())
 		cmd := fmt.Sprintf("host %s.%s", name, target)
 
-		results := utils.ShellCmd(cmd)
+		results, _ := utils.ShellCmd(cmd)
 		records := strings.Split(results, "\n")
 		for _, line := range records {
 			if strings.Contains(line, "has address") {
@@ -118,7 +118,7 @@ func DNSBruteforceReverse(target string, baseIP string) {
 	for i := lower; i <= upper; i++ {
 		ip := fmt.Sprintf("%s.%d", prefix, i)
 		cmd := fmt.Sprintf("host %s", ip)
-		results := utils.ShellCmd(cmd)
+		results, _ := utils.ShellCmd(cmd)
 		records := strings.Split(results, "\n")
 
 		for _, line := range records {
