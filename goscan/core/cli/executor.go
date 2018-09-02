@@ -188,15 +188,20 @@ func loadPortscan(src string) bool {
 	// If it's a folder, iterate through all the files contained in there
 	fpath, _ := os.Stat(src)
 	if fpath.IsDir() {
-		dir := filepath.Dir(src)
-		files, err := ioutil.ReadDir(dir)
-		if err != nil {
-			utils.Config.Log.LogError(fmt.Sprintf("Error while listing content of directory: %s", src))
-		}
-		for _, f := range files {
-			if filepath.Ext(f.Name()) == ".xml" {
-				loadNmapXML(filepath.Join(dir, f.Name()))
+		err := filepath.Walk(src,
+			func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				utils.Config.Log.LogError(fmt.Sprintf("Error while listing content of directory: %s", src))
+				return err
 			}
+			t, _ := os.Stat(path)
+			if filepath.Ext(t.Name()) == ".xml" {
+				loadNmapXML(path)
+			}
+			return nil
+		})
+		if err != nil {
+			return false
 		}
 	} else {
 		// If it's a file, import it straight away
