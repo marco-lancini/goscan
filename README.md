@@ -4,8 +4,9 @@
 
 Although it started as a small side-project I developed in order to learn [@golang](https://twitter.com/golang), GoScan can now be used to perform host discovery, port scanning, and service enumeration not only in situations where being stealthy is not a priority and time is limited (think at CTFs, OSCP, exams, etc.), but also (with a few tweaks in its configuration) during professional engagements.
 
-GoScan is also particularly suited for unstable environments (think unreliable network connectivity, lack of "`screen`", etc.), given that it fires scans and maintain their state in an SQLite database. Scans runs in the background (detached from the main thread), so even if connection to the box running GoScan is lost, results can be uploaded from one of the `load` commands (more on this below). That is, data can be imported into GoScan at different stages of the process, without the need to restart the entire process from scratch if something goes wrong.
+GoScan is also particularly suited for unstable environments (think unreliable network connectivity, lack of "`screen`", etc.), given that it fires scans and maintain their state in an SQLite database. Scans runs in the background (detached from the main thread), so even if connection to the box running GoScan is lost, results can be uploaded asynchronously (more on this below). That is, data can be imported into GoScan at different stages of the process, without the need to restart the entire process from scratch if something goes wrong.
 
+In addition, the Service Enumeration phase integrates a collection of other tools (e.g., `EyeWitness`, `Hydra`, `nikto`, etc.), each one tailored to target a specific service.
 
 ![demo](https://raw.githubusercontent.com/marco-lancini/goscan/master/.github/demo.gif)
 
@@ -112,13 +113,14 @@ The _Service Enumeration_ phase currently supports the following integrations:
 | DNS  | <ul><li>nmap</li><li>dnsrecon</li><li>dnsenum</li><li>host</li></ul> |
 | FINGER  | <ul><li>nmap</li><li>finger-user-enum</li></ul> |
 | FTP  | <ul><li>nmap</li><li>ftp-user-enum</li><li>hydra [AGGRESSIVE]</li></ul> |
-| HTTP | <ul><li>nmap</li><li>nikto</li><li>dirb</li><li>sqlmap [AGGRESSIVE]</li><li>fimap [AGGRESSIVE]</li></ul> |
-| RDP  | <ul><li>nmap</li></ul> |
+| HTTP | <ul><li>nmap</li><li>nikto</li><li>dirb</li><li>EyeWitness</li><li>sqlmap [AGGRESSIVE]</li><li>fimap [AGGRESSIVE]</li></ul> |
+| RDP  | <ul><li>nmap</li><li>EyeWitness</li></ul> |
 | SMB  | <ul><li>nmap</li><li>enum4linux</li><li>nbtscan</li><li>samrdump</li></ul> |
 | SMTP | <ul><li>nmap</li><li>smtp-user-enum</li></ul> |
 | SNMP | <ul><li>nmap</li><li>snmpcheck</li><li>onesixtyone</li><li>snmpwalk</li></ul> |
 | SSH  | <ul><li>hydra [AGGRESSIVE]</li></ul> |
 | SQL  | <ul><li>nmap</li></ul> |
+| VNC  | <ul><li>EyeWitness</li></ul> |
 
 
 
