@@ -64,41 +64,14 @@ GoScan supports all the main steps of network enumeration:
 
 ![process](https://raw.githubusercontent.com/marco-lancini/goscan/master/.github/goscan_process.png)
 
-
-1. **Load targets**
-    * Add a single target via the CLI (must be a /32): `load target SINGLE <IP>`
-    * Upload multiple targets from a text file or folder: `load target MULTI <path-to-file>`
-2. **Host Discovery**
-    * Perform a Ping Sweep: `sweep <TYPE> <TARGET>`
-    * OR load results from a previous discovery:
-        - Add a single alive host via the CLI (must be a /32): `load alive SINGLE <IP>`
-        - Upload multiple alive hosts from a text file or folder: `load alive MULTI <path-to-file>`
-3. **Port Scanning**
-    * Perform a port scan: `portscan <TYPE> <TARGET>`
-    * OR upload nmap results from XML files or folder: `load portscan <path-to-file>`
-4. **Service Enumeration**
-    * Dry Run (only show commands, without performing them): `enumerate <TYPE> DRY <TARGET>`
-    * Perform enumeration of detected services: `enumerate <TYPE> <POLITE/AGGRESSIVE> <TARGET>`
-
-5. **Special Scans**
-   	* *EyeWitness*
-        - Take screenshots of websites, RDP services, and open VNC servers (KALI ONLY): `special eyewitness`
-        - `EyeWitness.py` needs to be in the system path
-	* *Extract (Windows) domain information from enumeration data*
-		- `special domain <users/hosts/servers>`
-	* *DNS*
-		- Enumerate DNS (nmap, dnsrecon, dnsenum): `special dns DISCOVERY <domain>`
-		- Bruteforce DNS: `special dns BRUTEFORCE <domain>`
-		- Reverse Bruteforce DNS: `special dns BRUTEFORCE_REVERSE <domain> <base_IP>`
-
-
-
-In addition, it has a few utils:
-* Show results: `show <targets/hosts/ports`
-* Change the output folder (by default `~/goscan`): `set output_folder <PATH>`
-* Modify the default nmap switches: `set nmap_switches <SWEEP/TCP_FULL/TCP_STANDARD/TCP_VULN/UDP_STANDARD> <SWITCHES>`
-* Modify the default wordlists: `set_wordlists <FINGER_USER/FTP_USER/...> <PATH>`
-
+| Step | Commands |
+| ---- | ----------- |
+| 1. **Load targets**   | <ul><li>Add a single target via the CLI (must be a /32): `load target SINGLE <IP>`</li><li>Upload multiple targets from a text file or folder: `load target MULTI <path-to-file>`</li></ul>|
+| 2. **Host Discovery** | <ul><li>Perform a Ping Sweep: `sweep <TYPE> <TARGET>`</li><li>  Or load results from a previous discovery:<ul><li>Add a single alive host via the CLI (must be a /32): `load alive SINGLE <IP>`</li><li>Upload multiple alive hosts from a text file or folder: `load alive MULTI <path-to-file>`</li></ul></li></ul> |
+| 3. **Port Scanning** | <ul><li>Perform a port scan: `portscan <TYPE> <TARGET>`</li><li>Or upload nmap results from XML files or folder: `load portscan <path-to-file>`</li></ul> |
+| 4. **Service Enumeration** | <ul><li>Dry Run (only show commands, without performing them): `enumerate <TYPE> DRY <TARGET>`</li><li> Perform enumeration of detected services: `enumerate <TYPE> <POLITE/AGGRESSIVE> <TARGET>`</li></ul> |
+| 5. **Special Scans** | <ul><li>*EyeWitness*<ul><li>Take screenshots of websites, RDP services, and open VNC servers (KALI ONLY): `special eyewitness`</li><li>`EyeWitness.py` needs to be in the system path</li></ul></li><li>*Extract (Windows) domain information from enumeration data*<ul><li>`special domain <users/hosts/servers>`</li></ul></li><li>*DNS*<ul><li>Enumerate DNS (nmap, dnsrecon, dnsenum): `special dns DISCOVERY <domain>`</li><li>Bruteforce DNS: `special dns BRUTEFORCE <domain>`</li><li>Reverse Bruteforce DNS: `special dns BRUTEFORCE_REVERSE <domain> <base_IP>`</li></ul></li> |
+| **Utils** | <ul><li>Show results: `show <targets/hosts/ports`</li><li>Change the output folder (by default `~/goscan`): `set output_folder <PATH>`</li><li>Modify the default nmap switches: `set nmap_switches <SWEEP/TCP_FULL/TCP_STANDARD/TCP_VULN/UDP_STANDARD> <SWITCHES>`</li><li>Modify the default wordlists: `set_wordlists <FINGER_USER/FTP_USER/...> <PATH>`</li></ul> |
 
 
 
