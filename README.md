@@ -19,13 +19,13 @@ In addition, the Service Enumeration phase integrates a collection of other tool
 Binaries are available from the [Release](https://github.com/marco-lancini/goscan/releases) page.
 
 ```bash
-# macOS (darwin)
-$ wget https://github.com/marco-lancini/goscan/releases/download/v2.0/goscan_2.0_darwin_amd64.zip
-$ unzip goscan_2.0_darwin_amd64.zip
-
-# Linux
+# Linux (64bit)
 $ wget https://github.com/marco-lancini/goscan/releases/download/v2.0/goscan_2.0_linux_amd64.zip
 $ unzip goscan_2.0_linux_amd64.zip
+
+# Linux (32bit)
+$ wget https://github.com/marco-lancini/goscan/releases/download/v2.0/goscan_2.0_linux_386.zip
+$ unzip goscan_2.0_linux_386.zip
 
 # After that, place the executable in your PATH
 $ chmod +x goscan

@@ -37,42 +37,42 @@ func gatherUsers() {
 
 func gatherHosts() {
 	utils.Config.Log.LogNotify("Computer name:")
-	cmd := fmt.Sprintf(`grep -r "Computer name" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s`, utils.Config.Outfolder)
+	cmd := fmt.Sprintf(`grep -r "Computer name" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s`, utils.Config.Outfolder)
 	results, _ := utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("NetBIOS Computer name:")
-	cmd = fmt.Sprintf(`grep -r "NetBIOS computer name" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -r "NetBIOS computer name" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("NetBIOS name:")
-	cmd = fmt.Sprintf(`grep -r "NetBIOS name" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | cut -d " " -f 1,3,4,5`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -r "NetBIOS name" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | cut -d " " -f 1,3,4,5`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("NetBIOS MAC:")
-	cmd = fmt.Sprintf(`grep -r "NetBIOS MAC" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | cut -d " " -f 1,9,10,11`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -r "NetBIOS MAC" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | cut -d " " -f 1,9,10,11`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("NetBIOS user:")
-	cmd = fmt.Sprintf(`grep -r "NetBIOS user" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | cut -d " " -f 1,6,7,8`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -r "NetBIOS user" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | cut -d " " -f 1,6,7,8`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("Domain name:")
-	cmd = fmt.Sprintf(`grep -r "Domain name" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -r "Domain name" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("Forest name:")
-	cmd = fmt.Sprintf(`grep -r "Forest name" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -r "Forest name" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("FQDN:")
-	cmd = fmt.Sprintf(`grep -r "FQDN" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -r "FQDN" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
@@ -85,58 +85,58 @@ func gatherHosts() {
 func gatherServers() {
 
 	utils.Config.Log.LogNotify("Hostname:")
-	cmd := fmt.Sprintf(`grep -riE "*<00>" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
+	cmd := fmt.Sprintf(`grep -riE "*<00>" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
 	results, _ := utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("Domain name:")
-	cmd = fmt.Sprintf(`grep -riE "*<00>" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<group>"`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -riE "*<00>" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<group>"`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("Domain Master Browser:")
-	cmd = fmt.Sprintf(`grep -riE "*<1B>" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -riE "*<1B>" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("Domain Controllers:")
-	cmd = fmt.Sprintf(`grep -riE "*<1C>" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<group>"`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -riE "*<1C>" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<group>"`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("Master Browser:")
-	cmd = fmt.Sprintf(`grep -riE "*<1D>" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -riE "*<1D>" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
-	cmd = fmt.Sprintf(`grep -riE "\x01\x02__MSBROWSE__\x02<01>" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<group>"`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -riE "\x01\x02__MSBROWSE__\x02<01>" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<group>"`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("Messenger Service:")
-	cmd = fmt.Sprintf(`grep -riE "*<01>" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -riE "*<01>" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
-	cmd = fmt.Sprintf(`grep -riE "*<03>" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -riE "*<03>" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("Remote Access Service:")
-	cmd = fmt.Sprintf(`grep -riE "*<06>" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -riE "*<06>" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("Browser Service Elections:")
-	cmd = fmt.Sprintf(`grep -riE "*<1E>" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<group>"`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -riE "*<1E>" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<group>"`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("File Server Service:")
-	cmd = fmt.Sprintf(`grep -riE "*<20>" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -riE "*<20>" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 
 	utils.Config.Log.LogNotify("RAS Client Service:")
-	cmd = fmt.Sprintf(`grep -riE "*<21>" --include="tcp-full.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
+	cmd = fmt.Sprintf(`grep -riE "*<21>" --include="*.nmap" --exclude="vuln-scan.*" --color=always %s | grep "<unique>"`, utils.Config.Outfolder)
 	results, _ = utils.ShellCmd(cmd)
 	fmt.Printf(results)
 }

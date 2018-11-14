@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [2.1] - 2018-11-14
+#### Fixed
+- Cross-compilation for linux 32bit
+#### Removed
+- Cross-compilation for darwin 64bit (failing with `CGO_ENABLED=1`)
+
+
 ## [2.0] - 2018-09-02
 #### Added
 - Complete refactoring of the core, new syntax, new commands
