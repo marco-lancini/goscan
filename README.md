@@ -5,7 +5,7 @@
 
 Although it started as a small side-project I developed in order to learn [@golang](https://twitter.com/golang), GoScan can now be used to perform host discovery, port scanning, and service enumeration not only in situations where being stealthy is not a priority and time is limited (think at CTFs, OSCP, exams, etc.), but also (with a few tweaks in its configuration) during professional engagements.
 
-GoScan is also particularly suited for unstable environments (think unreliable network connectivity, lack of "`screen`", etc.), given that it fires scans and maintain their state in an SQLite database. Scans runs in the background (detached from the main thread), so even if connection to the box running GoScan is lost, results can be uploaded asynchronously (more on this below). That is, data can be imported into GoScan at different stages of the process, without the need to restart the entire process from scratch if something goes wrong.
+GoScan is also particularly suited for unstable environments (think unreliable network connectivity, lack of "`screen`", etc.), given that it fires scans and maintain their state in an SQLite database. Scans run in the background (detached from the main thread), so even if connection to the box running GoScan is lost, results can be uploaded asynchronously (more on this below). That is, data can be imported into GoScan at different stages of the process, without the need to restart the entire process from scratch if something goes wrong.
 
 In addition, the Service Enumeration phase integrates a collection of other tools (e.g., `EyeWitness`, `Hydra`, `nikto`, etc.), each one tailored to target a specific service.
 
