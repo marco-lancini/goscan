@@ -1,4 +1,5 @@
-# GoScan
+<p align="center"><img src="https://raw.githubusercontent.com/marco-lancini/goscan/master/.github/goscan_logo.png" width="40%"></p>
+
 
 **GoScan** is an interactive network scanner client, featuring auto-completion, which provides abstraction and automation over nmap.
 
