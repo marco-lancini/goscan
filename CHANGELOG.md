@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [2.2] - 2019-02-04
+#### Fixed
+- Changing output folder (`set output_folder <PATH>`) now also changes the location of the database
+
+
 ## [2.1] - 2018-11-14
 #### Fixed
 - Cross-compilation for linux 32bit

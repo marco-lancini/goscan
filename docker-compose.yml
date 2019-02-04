@@ -10,6 +10,6 @@ services:
             - ./goscan/:/go/src/github.com/marco-lancini/goscan
         command: /bin/bash
         environment:
-            OUT_FOLDER: /data/goscan/
-            DB_PATH: /data/goscan/goscan.db
+            GOSCAN_OUT_FOLDER: /data/goscan/
+            GOSCAN_DB_PATH: /data/goscan/goscan.db
             DEBUG: 0

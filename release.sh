@@ -12,8 +12,8 @@ TO_UPDATE=(
 )
 
 read -p "[?] Did you remember to update the inbuilt help? "
-read -p "[?] Did you remember to update CHANGELOG.md? "
 read -p "[?] Did you remember to update README.md with new features/changes? "
+read -p "[?] Did you remember to update and commit CHANGELOG.md? "
 
 printf "\n[*] Current version is $CURRENT_VERSION. Enter new version: "
 read NEW_VERSION
@@ -28,7 +28,7 @@ do
   git add $file
 done
 
-read -p "[?] Did you remember to run make cross? " 
+read -p "[?] Please run make cross, then press return..." 
 
 printf "[*] Pushing and tagging version $NEW_VERSION in 5 seconds...\n\n"
 sleep 5

@@ -71,14 +71,27 @@ func InitConfig() {
 	EnsureDir(Config.Outfolder)
 
 	// Init DB
-	if os.Getenv("DB_PATH") != "" {
-		Config.DBPath = os.Getenv("DB_PATH")
+	if os.Getenv("GOSCAN_DB_PATH") != "" {
+		Config.DBPath = os.Getenv("GOSCAN_DB_PATH")
 	} else {
 		Config.DBPath = filepath.Join(Config.Outfolder, "goscan.db")
 	}
 	Config.DB = model.InitDB(Config.DBPath)
 	Config.Log.LogDebug("Connected to DB")
 }
+
+func ChangeOutFolder(path string) {
+	// Create the folder
+	Config.Outfolder = path
+	EnsureDir(Config.Outfolder)
+
+	// Reinit the DB
+	Config.DBPath = filepath.Join(Config.Outfolder, "goscan.db")
+	Config.DB = model.InitDB(Config.DBPath)
+	Config.Log.LogDebug("Connected to DB")
+}
+
+
 
 // ---------------------------------------------------------------------------------------
 // MANAGE COMMANDS

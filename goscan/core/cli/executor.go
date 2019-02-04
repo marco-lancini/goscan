@@ -426,8 +426,7 @@ func cmdSet(args []string) {
 	switch kind {
 	case "output_folder":
 		folder, _ := utils.ParseNextArg(args)
-		utils.Config.Outfolder = folder
-		utils.EnsureDir(utils.Config.Outfolder)
+		utils.ChangeOutFolder(folder)
 	case "nmap_switches":
 		// Get kind
 		kind, args := utils.ParseNextArg(args)
