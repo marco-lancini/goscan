@@ -21,12 +21,12 @@ Binaries are available from the [Release](https://github.com/marco-lancini/gosca
 
 ```bash
 # Linux (64bit)
-$ wget https://github.com/marco-lancini/goscan/releases/download/v2.2/goscan_2.2_linux_amd64.zip
-$ unzip goscan_2.2_linux_amd64.zip
+$ wget https://github.com/marco-lancini/goscan/releases/download/v2.3/goscan_2.3_linux_amd64.zip
+$ unzip goscan_2.3_linux_amd64.zip
 
 # Linux (32bit)
-$ wget https://github.com/marco-lancini/goscan/releases/download/v2.2/goscan_2.2_linux_386.zip
-$ unzip goscan_2.2_linux_386.zip
+$ wget https://github.com/marco-lancini/goscan/releases/download/v2.3/goscan_2.3_linux_386.zip
+$ unzip goscan_2.3_linux_386.zip
 
 # After that, place the executable in your PATH
 $ chmod +x goscan
