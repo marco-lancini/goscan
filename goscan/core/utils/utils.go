@@ -80,6 +80,7 @@ func InitConfig() {
 	Config.Log.LogDebug("Connected to DB")
 }
 
+// Change output folder as instructed by the user and re-init the db
 func ChangeOutFolder(path string) {
 	// Create the folder
 	Config.Outfolder = path

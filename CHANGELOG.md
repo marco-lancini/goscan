@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [2.3] 
+#### Fixed
+- Nmap output file names when running concurrently on all targets
+
+
 ## [2.2] - 2019-02-04
 #### Fixed
 - Changing output folder (`set output_folder <PATH>`) now also changes the location of the database

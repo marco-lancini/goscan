@@ -34,8 +34,8 @@ func execSweep(name, target, folder, file, nmapArgs string) {
 		   (target == "TO_ANALYZE" && h.Step == model.IMPORTED.String()) || 
 		   target == h.Address {
 			temp := h
-			file = fmt.Sprintf("%s_%s", file, h.Address)
-			go workerSweep(name, &temp, folder, file, nmapArgs)
+			fname := fmt.Sprintf("%s_%s", file, h.Address)
+			go workerSweep(name, &temp, folder, fname, nmapArgs)
 		}
 	}
 }

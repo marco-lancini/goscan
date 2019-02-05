@@ -66,8 +66,8 @@ func execScan(name, target, folder, file, nmapArgs string) {
 		   (target == "TO_ANALYZE" && h.Step == model.NEW.String()) || 
 		   target == h.Address {
 			temp := h
-			file = fmt.Sprintf("%s_%s", file, h.Address)
-			go worker(name, &temp, folder, file, nmapArgs)
+			fname := fmt.Sprintf("%s_%s", file, h.Address)
+			go worker(name, &temp, folder, fname, nmapArgs)
 		}
 	}
 }
