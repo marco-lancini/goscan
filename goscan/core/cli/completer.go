@@ -71,6 +71,7 @@ func argumentsCompleter(d prompt.Document, args []string) []prompt.Suggest {
 	case "set":
 		if len(args) == 2 {
 			subcommands := []prompt.Suggest{
+				{Text: "config_file", Description: "Set configs from file."},
 				{Text: "output_folder", Description: "Set the output folder."},
 				{Text: "nmap_switches", Description: "Modify the default nmap switches."},
 				{Text: "wordlists", Description: "Modify the default wordlists."},
@@ -79,6 +80,8 @@ func argumentsCompleter(d prompt.Document, args []string) []prompt.Suggest {
 		}
 		if len(args) == 3 {
 			switch args[1] {
+			case "config_file":
+				return fileCompleter(d)
 			case "output_folder":
 				return fileCompleter(d)
 			case "nmap_switches":

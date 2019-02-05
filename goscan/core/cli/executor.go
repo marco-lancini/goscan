@@ -81,6 +81,7 @@ func cmdHelp() {
 		[]string{"Show", "Show live hosts", "show hosts"},
 		[]string{"Show", "Show detailed ports information", "show ports"},
 
+		[]string{"Utils", "Set configs from file", "set config_file <PATH>"},
 		[]string{"Utils", "Set output folder", "set output_folder <PATH>"},
 		[]string{"Utils", "Modify the default nmap switches", "set nmap_switches <SWEEP/TCP_FULL/TCP_STANDARD/TCP_VULN/UDP_STANDARD> <SWITCHES>"},
 		[]string{"Utils", "Modify the default wordlists", "set wordlists <FINGER_USER/FTP_USER/...> <PATH>"},
@@ -414,6 +415,26 @@ func ShowPorts() {
 // ---------------------------------------------------------------------------------------
 // UTILS
 // ---------------------------------------------------------------------------------------
+// Set configs from file
+func SetConfigFile(fname string) {
+	// Open source file
+	file, err := os.Open(fname)
+	if err != nil {
+		utils.Config.Log.LogError(fmt.Sprintf("Error while reading source file (%s): %s", fname, err))
+	}
+	defer file.Close()
+	// Read line by line
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		cmd := scanner.Text()
+		Executor(cmd)
+	}
+	// Error while reading the file
+	if err := scanner.Err(); err != nil {
+		utils.Config.Log.LogError(fmt.Sprintf("Error while reading source file: %s", err))
+	}
+}
+
 func cmdSet(args []string) {
 	// // Check arguments length to ensure all required options have been provided
 	// if len(args) != 1 {
@@ -424,6 +445,9 @@ func cmdSet(args []string) {
 	// Parse kind of operation
 	kind, args := utils.ParseNextArg(args)
 	switch kind {
+	case "config_file":
+		fname, _ := utils.ParseNextArg(args)
+		SetConfigFile(fname)
 	case "output_folder":
 		folder, _ := utils.ParseNextArg(args)
 		utils.ChangeOutFolder(folder)

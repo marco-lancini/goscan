@@ -4,7 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
-## [2.3] 
+## [2.3] - 2019-02-05
+#### Added
+- Support to automatically configure settings by loading a configuration file
 #### Fixed
 - Nmap output file names when running concurrently on all targets
 
