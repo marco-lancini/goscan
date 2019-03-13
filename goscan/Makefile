@@ -5,6 +5,11 @@ LDFLAGS := -X 'main.version=$(VERSION)' -X 'main.author=$(AUTHOR)'
 
 .DEFAULT_GOAL := help
 
+.PHONY: init
+init:  ## Init the project.
+	go get -u github.com/golang/dep/cmd/dep
+	dep init
+
 .PHONY: setup
 setup:  ## Setup for required tools.
 	go get github.com/golang/lint/golint

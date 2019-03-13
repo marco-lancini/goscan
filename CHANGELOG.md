@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [2.4] - 2019-03-13
+#### Fixed
+- Improved documentation related to building from source
+
+
 ## [2.3] - 2019-02-05
 #### Added
 - Support to automatically configure settings by loading a configuration file

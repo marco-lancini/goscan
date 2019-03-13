@@ -36,26 +36,23 @@ $ sudo mv ./goscan /usr/local/bin/goscan
 #### Build from source
 
 ```bash
-$ git clone https://github.com/marco-lancini/goscan.git
-$ cd goscan/goscan/
-$ make setup
-$ make build
-```
-
-To create a multi-platform binary, use the cross command via make:
-
-```bash
-$ make cross
-```
-
-
-#### Docker
-
-```bash
+# Clone and spin up the project
 $ git clone https://github.com/marco-lancini/goscan.git
 $ cd goscan/
 $ docker-compose up --build
+$ docker-compose run cli /bin/bash
+
+# Initialize DEP
+root@cli:/go/src/github.com/marco-lancini/goscan $ make init
+root@cli:/go/src/github.com/marco-lancini/goscan $ make make setup
+
+# Build
+root@cli:/go/src/github.com/marco-lancini/goscan $ make build
+
+# To create a multi-platform binary, use the cross command via make
+root@cli:/go/src/github.com/marco-lancini/goscan $ make cross
 ```
+
 
 
 
