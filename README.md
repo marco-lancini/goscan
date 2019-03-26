@@ -44,7 +44,7 @@ $ docker-compose run cli /bin/bash
 
 # Initialize DEP
 root@cli:/go/src/github.com/marco-lancini/goscan $ make init
-root@cli:/go/src/github.com/marco-lancini/goscan $ make make setup
+root@cli:/go/src/github.com/marco-lancini/goscan $ make setup
 
 # Build
 root@cli:/go/src/github.com/marco-lancini/goscan $ make build
