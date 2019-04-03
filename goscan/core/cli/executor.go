@@ -133,21 +133,25 @@ func cmdLoad(args []string) bool {
 		}
 	case "MULTI":
 		// If it's a folder, iterate through all the files contained in there
-		fpath, _ := os.Stat(src)
-		if fpath.IsDir() {
-			dir := filepath.Dir(src)
-			files, err := ioutil.ReadDir(dir)
-			if err != nil {
-				utils.Config.Log.LogError(fmt.Sprintf("Error while listing content of directory: %s", src))
-			}
-			for _, f := range files {
-				if !f.IsDir() {
-					loadFile(kind, filepath.Join(dir, f.Name()))
-				}
-			}
+		fpath, err := os.Stat(src)
+		if err != nil {
+			utils.Config.Log.LogError(fmt.Sprintf("Error while trying to read file: %s", fpath))
 		} else {
-			// If it's a file, import it straight away
-			loadFile(kind, src)
+			if fpath.IsDir() {
+				dir := filepath.Dir(src)
+				files, err := ioutil.ReadDir(dir)
+				if err != nil {
+					utils.Config.Log.LogError(fmt.Sprintf("Error while listing content of directory: %s", src))
+				}
+				for _, f := range files {
+					if !f.IsDir() {
+						loadFile(kind, filepath.Join(dir, f.Name()))
+					}
+				}
+			} else {
+				// If it's a file, import it straight away
+				loadFile(kind, src)
+			}
 		}
 	}
 	return true
