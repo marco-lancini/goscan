@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## WIP
+#### Fixed
+- Tailored nmap switches
+
+
 ## [2.4] - 2019-03-13
 #### Fixed
 - Improved documentation related to building from source
