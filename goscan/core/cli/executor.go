@@ -21,6 +21,8 @@ func Executor(s string) {
 	switch cmd {
 	case "load":
 		cmdLoad(args)
+	case "unload":
+		cmdUnload(args)
 	case "sweep":
 		cmdSweep(args)
 	case "portscan":
@@ -58,6 +60,7 @@ func cmdHelp() {
 	data := [][]string{
 		[]string{"Load target", "Add a single target via the CLI (must be a /32)", "load target SINGLE <IP>"},
 		[]string{"Load target", "Upload multiple targets from a text file or folder", "load target MULTI <path-to-file>"},
+		[]string{"Unload target", "Delete a single target via the CLI", "unload target SINGLE <IP>"},
 
 		[]string{"Host Discovery", "Perform a Ping Sweep", "sweep <TYPE> <TARGET>"},
 		[]string{"Load Host Discovery", "Add a single alive host via the CLI (must be a /32)", "load alive SINGLE <IP>"},
@@ -236,6 +239,35 @@ func loadNmapXML(fname string) {
 			scan.ProcessResults(h, record)
 		}
 	}
+}
+
+// ---------------------------------------------------------------------------------------
+// UNLOAD
+// ---------------------------------------------------------------------------------------
+func cmdUnload(args []string) bool {
+	if len(args) < 3 {
+		utils.Config.Log.LogError("Missing IP target argument")
+		return false
+	}
+	// args: string[target, SINGLE, <IP>]
+	ip := args[2]
+
+	// Parse address
+	target, parsed := utils.ParseAddress(ip)
+	if parsed == false {
+		utils.Config.Log.LogError("Invalid address provided")
+		return false
+	}
+
+	err := model.DeleteTarget(utils.Config.DB, target)
+	if err != nil {
+		utils.Config.Log.LogError(fmt.Sprintf("Error while deleting: %s", err))
+		return false
+	}
+
+	utils.Config.Log.LogInfo("Target deleted")
+
+	return true
 }
 
 // ---------------------------------------------------------------------------------------

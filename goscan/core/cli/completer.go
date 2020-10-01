@@ -38,6 +38,7 @@ func Completer(d prompt.Document) []prompt.Suggest {
 var commands = []prompt.Suggest{
 
 	{Text: "load", Description: "Import data at different stages of the process."},
+	{Text: "unload", Description: "Delete a target"},
 	{Text: "sweep", Description: "Perform a Ping Sweep to discover alive hosts."},
 	{Text: "portscan", Description: "Perform a port scan."},
 	{Text: "enumerate", Description: "Perform enumeration of detected services."},
@@ -239,6 +240,26 @@ func argumentsCompleter(d prompt.Document, args []string) []prompt.Suggest {
 			case "MULTI":
 				return fileCompleter(d)
 			}
+		}
+
+	// -----------------------------------------------------------------------------------
+	// UNLOAD TARGETS
+	// -----------------------------------------------------------------------------------
+	case "unload":
+		if len(args) == 2 {
+			subcommands := []prompt.Suggest{
+				{Text: "target", Description: "Delete target address."},
+			}
+			return prompt.FilterHasPrefix(subcommands, args[1], true)
+		}
+		if len(args) == 3 {
+			subcommands := []prompt.Suggest{
+				{Text: "SINGLE", Description: "Directly delete a single target via the CLI."},
+			}
+			return prompt.FilterHasPrefix(subcommands, args[2], true)
+		}
+		if len(args) == 4 {
+			return prompt.FilterContains(getAllTargets(), args[3], true)
 		}
 
 	// -----------------------------------------------------------------------------------
@@ -470,4 +491,13 @@ func fileCompleter(d prompt.Document) []prompt.Suggest {
 		suggests = append(suggests, prompt.Suggest{Text: filepath.Join(dir, f.Name())})
 	}
 	return prompt.FilterHasPrefix(suggests, path, false)
+}
+
+func getAllTargets() []prompt.Suggest {
+	targets := model.GetAllTargets(utils.Config.DB)
+	suggests := make([]prompt.Suggest, 0, len(targets))
+	for _, target := range targets {
+		suggests = append(suggests, prompt.Suggest{Text: target.Address})
+	}
+	return suggests
 }
