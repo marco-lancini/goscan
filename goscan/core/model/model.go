@@ -83,6 +83,21 @@ func AddTarget(db *gorm.DB, address string, step string) *Target {
 	return t
 }
 
+// DeleteTarget deletes a target from the db
+func DeleteTarget(db *gorm.DB, address string) error {
+	lock.Lock()
+	defer lock.Unlock()
+
+	result := db.Where("address = ?", address).Delete(&Target{})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("No such target")
+	}
+	return nil
+}
+
 // Getters
 func GetAllTargets(db *gorm.DB) []Target {
 	targets := []Target{}
