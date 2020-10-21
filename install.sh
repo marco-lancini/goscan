@@ -12,6 +12,7 @@ if [ $os == "Linux_amd64" ] || [ $os == "Linux_386" ]; then
         unzip goscan_$goscan_version_$os.zip
         rm goscan_$goscan_version_$os.zip
         echo "Installation completed Successfully."
+        echo "Verify installation : ./goscan version"
         echo "To install it globally:"
         echo "chmod +x goscan"
         echo "sudo mv ./goscan /usr/local/bin/goscan"
